@@ -1,0 +1,112 @@
+.ver-planillas-container {
+  width: 100%;
+  max-width: 900px;
+  margin: 2rem auto;
+  padding: 2rem;
+}
+
+.ver-planillas-container h1 {
+  text-align: center;
+  color: #2c3e50;
+  margin-bottom: 2rem;
+}
+
+.no-planillas {
+  text-align: center;
+  padding: 3rem;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+}
+
+.no-planillas p {
+  font-size: 1.2rem;
+  color: #7f8c8d;
+  margin-bottom: 1.5rem;
+}
+
+.button-crear {
+  padding: 0.8rem 1.5rem;
+  font-size: 1rem;
+  font-weight: bold;
+  text-decoration: none;
+  color: white;
+  background-color: #3498db;
+  border-radius: 5px;
+  transition: background-color 0.3s;
+}
+
+.button-crear:hover {
+  background-color: #2980b9;
+}
+
+.lista-planillas {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 1.5rem;
+}
+
+.planilla-card {
+  background-color: #fff;
+  border-radius: 8px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  text-decoration: none;
+  color: inherit;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: transform 0.2s, box-shadow 0.2s;
+  flex-grow: 1; /* Permite que la tarjeta crezca */
+}
+
+.planilla-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 15px rgba(0,0,0,0.15);
+}
+
+.planilla-card h2 {
+  font-size: 1.4rem;
+  color: #34495e;
+  margin: 0 0 1rem 0;
+}
+
+.tipo-tag {
+  align-self: flex-start;
+  padding: 0.3rem 0.7rem;
+  border-radius: 15px;
+  font-size: 0.8rem;
+  font-weight: bold;
+  color: #fff;
+  text-transform: capitalize;
+}
+
+.tipo-tag.personal {
+  background-color: #2980b9;
+}
+
+.tipo-tag.compartida {
+  background-color: #8e44ad;
+}
+
+.planilla-card-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem; /* Espacio entre la tarjeta y el botón */
+}
+
+.button-eliminar {
+  padding: 0.6rem 1rem;
+  font-size: 0.9rem;
+  font-weight: bold;
+  color: white;
+  background-color: #e74c3c; /* Rojo para eliminar */
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.button-eliminar:hover {
+  background-color: #c0392b; /* Rojo más oscuro al pasar el mouse */
+}
