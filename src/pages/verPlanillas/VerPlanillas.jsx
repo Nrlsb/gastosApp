@@ -16,6 +16,7 @@ export default function VerPlanillas() {
       setLoading(false);
       return;
     }
+    console.log("User UID:", user.uid);
 
     const q = query(
       collection(db, 'planillas'),
