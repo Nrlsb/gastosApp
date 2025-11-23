@@ -1,22 +1,58 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { db } from '../../firebase';
+import { collection, query, where, orderBy, onSnapshot, deleteDoc, doc } from 'firebase/firestore';
+import useAuth from '../../hooks/useAuth';
 import './VerPlanillas.css';
 
 export default function VerPlanillas() {
   const [planillas, setPlanillas] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const { user } = useAuth();
 
   useEffect(() => {
-    const planillasGuardadas = JSON.parse(localStorage.getItem('planillas')) || [];
-    setPlanillas(planillasGuardadas);
-  }, []);
+    if (!user) {
+      setPlanillas([]);
+      setLoading(false);
+      return;
+    }
 
-  const handleEliminarPlanilla = (id, nombre) => {
+    const q = query(
+      collection(db, 'planillas'),
+      where('userId', '==', user.uid),
+      orderBy('createdAt', 'desc')
+    );
+
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const planillasData = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      setPlanillas(planillasData);
+      setLoading(false);
+    }, (error) => {
+      console.error('Error al obtener planillas:', error);
+      setLoading(false);
+    });
+
+    return () => unsubscribe();
+  }, [user]);
+
+  const handleEliminarPlanilla = async (id, nombre) => {
     if (window.confirm(`¿Estás seguro de que quieres eliminar la planilla "${nombre}"?`)) {
-      const planillasActualizadas = planillas.filter((p) => p.id !== id);
-      setPlanillas(planillasActualizadas);
-      localStorage.setItem('planillas', JSON.stringify(planillasActualizadas));
+      try {
+        await deleteDoc(doc(db, 'planillas', id));
+        alert('Planilla eliminada con éxito.');
+      } catch (error) {
+        console.error('Error al eliminar la planilla:', error);
+        alert('Hubo un error al eliminar la planilla. Por favor, inténtalo de nuevo.');
+      }
     }
   };
+
+  if (loading) {
+    return <div className="ver-planillas-container">Cargando planillas...</div>;
+  }
 
   return (
     <div className="ver-planillas-container">
