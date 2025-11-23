@@ -8,19 +8,19 @@ import './VerPlanillas.css';
 export default function VerPlanillas() {
   const [planillas, setPlanillas] = useState([]);
   const [loading, setLoading] = useState(true);
-  const { user } = useAuth();
+  const { currentUser } = useAuth();
 
   useEffect(() => {
-    if (!user) {
+    if (!currentUser) {
       setPlanillas([]);
       setLoading(false);
       return;
     }
-    console.log("User UID:", user.uid);
+
 
     const q = query(
       collection(db, 'planillas'),
-      where('userId', '==', user.uid),
+      where('userId', '==', currentUser.uid),
       orderBy('createdAt', 'desc')
     );
 
@@ -29,6 +29,7 @@ export default function VerPlanillas() {
         id: doc.id,
         ...doc.data(),
       }));
+
       setPlanillas(planillasData);
       setLoading(false);
     }, (error) => {
@@ -37,7 +38,7 @@ export default function VerPlanillas() {
     });
 
     return () => unsubscribe();
-  }, [user]);
+  }, [currentUser]);
 
   const handleEliminarPlanilla = async (id, nombre) => {
     if (window.confirm(`¿Estás seguro de que quieres eliminar la planilla "${nombre}"?`)) {
