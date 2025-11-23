@@ -176,7 +176,7 @@ function GastosPersonales() {
 
           <div className="row mt-3">
             <div className="col-12">
-              <button type="submit" className="btn btn-primary w-100">Añadir</button>
+              <button type="submit" className="btn btn-primary btn-lg w-100">Añadir</button>
             </div>
           </div>
         </form>

@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
+import { usePlanillas } from '../../context/PlanillasContext'; // Importar el hook del contexto
 import './Gastos.css';
 
 function Gastos() {
   const { planillaId } = useParams();
+  const { planillas, loading: planillasLoading } = usePlanillas(); // Obtener planillas y loading del contexto
   const localStorageKey = `expenses_${planillaId}`;
 
   // Estado para almacenar la lista de gastos, inicializado desde localStorage
@@ -27,6 +29,10 @@ function Gastos() {
   useEffect(() => {
     localStorage.setItem(localStorageKey, JSON.stringify(expenses));
   }, [expenses, localStorageKey]);
+
+  // Buscar el nombre de la planilla actual
+  const currentPlanilla = planillas.find(p => p.id === planillaId);
+  const planillaName = currentPlanilla ? currentPlanilla.nombre : 'Cargando...';
 
   // Limpiar formulario y salir del modo edición
   const resetForm = () => {
@@ -100,9 +106,13 @@ function Gastos() {
   // Calcular el total
   const totalExpenses = expenses.reduce((total, expense) => total + (expense.esCompartido ? expense.amount / 2 : expense.amount), 0).toFixed(2);
 
+  if (planillasLoading) {
+    return <div className="container mt-5">Cargando planilla...</div>;
+  }
+
   return (
     <div className="container mt-5">
-      <h1 className="text-center mb-4">Planilla de Gastos</h1>
+      <h1 className="text-center mb-4">Planilla: {planillaName}</h1>
 
       {/* Resumen de Gastos */}
       <div className="card p-3 mb-4 bg-light">

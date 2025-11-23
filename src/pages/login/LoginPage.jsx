@@ -20,16 +20,16 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="login-page">
-      <h2>Iniciar Sesión</h2>
-      <div className="auth-forms">
-        <div className="login-form">
-          <button onClick={handleGoogleSignIn} className="google-signin-button">
-            Iniciar Sesión con Google
+    <div className="container d-flex justify-content-center align-items-center min-vh-100">
+      <div className="card p-4 shadow-lg text-center" style={{ maxWidth: '400px', width: '100%' }}>
+        <h2 className="mb-4">Iniciar Sesión</h2>
+        <div className="d-grid gap-3">
+          <button onClick={handleGoogleSignIn} className="btn btn-danger btn-lg">
+            <i className="fab fa-google me-2"></i> Iniciar Sesión con Google
           </button>
         </div>
+        {error && <p className="text-danger mt-3">{error}</p>}
       </div>
-      {error && <p className="error-message">{error}</p>}
     </div>
   );
 };

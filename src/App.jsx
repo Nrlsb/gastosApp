@@ -6,6 +6,7 @@ import VerPlanillas from './pages/verPlanillas/VerPlanillas';
 import Gastos from './pages/gastos/Gastos';
 import LoginPage from './pages/login/LoginPage';
 import useAuth from './hooks/useAuth';
+import { PlanillasProvider } from './context/PlanillasContext';
 
 const ProtectedRoute = ({ children }) => {
   const { currentUser, loading } = useAuth();
@@ -23,41 +24,43 @@ const ProtectedRoute = ({ children }) => {
 
 function App() {
   return (
-    <Routes>
-      <Route path="/login" element={<LoginPage />} />
-      <Route
-        path="/"
-        element={
-          <ProtectedRoute>
-            <HomePage />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/crear-planilla"
-        element={
-          <ProtectedRoute>
-            <CrearPlanilla />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/ver-planillas"
-        element={
-          <ProtectedRoute>
-            <VerPlanillas />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/gastos/:planillaId"
-        element={
-          <ProtectedRoute>
-            <Gastos />
-          </ProtectedRoute>
-        }
-      />
-    </Routes>
+    <PlanillasProvider>
+      <Routes>
+        <Route path="/login" element={<LoginPage />} />
+        <Route
+          path="/"
+          element={
+            <ProtectedRoute>
+              <HomePage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/crear-planilla"
+          element={
+            <ProtectedRoute>
+              <CrearPlanilla />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/ver-planillas"
+          element={
+            <ProtectedRoute>
+              <VerPlanillas />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/gastos/:planillaId"
+          element={
+            <ProtectedRoute>
+              <Gastos />
+            </ProtectedRoute>
+          }
+        />
+      </Routes>
+    </PlanillasProvider>
   );
 }
 

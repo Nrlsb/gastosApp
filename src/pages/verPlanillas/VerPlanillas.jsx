@@ -1,52 +1,18 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
-import { db } from '../../firebase';
-import { collection, query, where, orderBy, onSnapshot, deleteDoc, doc } from 'firebase/firestore';
-import useAuth from '../../hooks/useAuth';
+import { usePlanillas } from '../../context/PlanillasContext'; // Importar el hook del contexto
 import './VerPlanillas.css';
 
 export default function VerPlanillas() {
-  const [planillas, setPlanillas] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const { currentUser } = useAuth();
-
-  useEffect(() => {
-    if (!currentUser) {
-      setPlanillas([]);
-      setLoading(false);
-      return;
-    }
-
-
-    const q = query(
-      collection(db, 'planillas'),
-      where('userId', '==', currentUser.uid),
-      orderBy('createdAt', 'desc')
-    );
-
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      const planillasData = snapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
-
-      setPlanillas(planillasData);
-      setLoading(false);
-    }, (error) => {
-      console.error('Error al obtener planillas:', error);
-      setLoading(false);
-    });
-
-    return () => unsubscribe();
-  }, [currentUser]);
+  const { planillas, loading, deletePlanilla, error } = usePlanillas(); // Usar el hook del contexto
 
   const handleEliminarPlanilla = async (id, nombre) => {
     if (window.confirm(`¿Estás seguro de que quieres eliminar la planilla "${nombre}"?`)) {
       try {
-        await deleteDoc(doc(db, 'planillas', id));
+        await deletePlanilla(id); // Usar la función deletePlanilla del contexto
         alert('Planilla eliminada con éxito.');
-      } catch (error) {
-        console.error('Error al eliminar la planilla:', error);
+      } catch (err) {
+        console.error('Error al eliminar la planilla:', err);
         alert('Hubo un error al eliminar la planilla. Por favor, inténtalo de nuevo.');
       }
     }
@@ -54,6 +20,10 @@ export default function VerPlanillas() {
 
   if (loading) {
     return <div className="ver-planillas-container">Cargando planillas...</div>;
+  }
+
+  if (error) {
+    return <div className="ver-planillas-container">Error: {error.message}</div>;
   }
 
   return (
