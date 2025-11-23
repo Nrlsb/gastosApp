@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
-import { usePlanillas } from '../../context/PlanillasContext'; // Importar el hook del contexto
+import { usePlanillas } from '../../shared/context/PlanillasContext'; // Importar el hook del contexto
 
 
 function Gastos() {

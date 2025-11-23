@@ -1,4 +1,4 @@
-@import './styles/variables.css';
+@import '/src/shared/styles/variables.css';
 
 body {
   margin: 0;

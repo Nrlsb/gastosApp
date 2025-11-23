@@ -1,18 +1,18 @@
 import { lazy, Suspense } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
-import { useToast } from './context/ToastContext';
-import ErrorBoundary from './components/ErrorBoundaries';
+import { useToast } from './shared/context/ToastContext';
+import ErrorBoundary from './shared/components/ErrorBoundaries';
 
-const HomePage = lazy(() => import('./pages/home/HomePage'));
-const CrearPlanilla = lazy(() => import('./pages/crearPlanilla/CrearPlanilla'));
-const VerPlanillas = lazy(() => import('./pages/verPlanillas/VerPlanillas'));
-const Gastos = lazy(() => import('./pages/gastos/Gastos'));
-const GastosCompartidos = lazy(() => import('./pages/gastosCompartidos/GastosCompartidos'));
-const GastosPersonales = lazy(() => import('./pages/gastosPersonales/GastosPersonales'));
-const LoginPage = lazy(() => import('./pages/login/LoginPage'));
-import LoadingSpinner from './components/ui/LoadingSpinner';
-import useAuth from './hooks/useAuth';
-import { PlanillasProvider } from './context/PlanillasContext';
+const HomePage = lazy(() => import('./features/home/HomePage'));
+const CrearPlanilla = lazy(() => import('./features/crearPlanilla/CrearPlanilla'));
+const VerPlanillas = lazy(() => import('./features/verPlanillas/VerPlanillas'));
+const Gastos = lazy(() => import('./features/gastos/Gastos'));
+const GastosCompartidos = lazy(() => import('./features/gastosCompartidos/GastosCompartidos'));
+const GastosPersonales = lazy(() => import('./features/gastosPersonales/GastosPersonales'));
+const LoginPage = lazy(() => import('./features/login/LoginPage'));
+import LoadingSpinner from './shared/components/ui/LoadingSpinner';
+import useAuth from './shared/hooks/useAuth';
+import { PlanillasProvider } from './shared/context/PlanillasContext';
 
 const ProtectedRoute = ({ children }) => {
   const { currentUser, loading } = useAuth();

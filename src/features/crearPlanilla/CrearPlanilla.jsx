@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { usePlanillas } from '../../context/PlanillasContext'; // Importar el hook del contexto
-import useAuth from '../../hooks/useAuth';
-import Button from '../../components/ui/Button';
-import Input from '../../components/forms/Input';
-import Card from '../../components/ui/Card';
-import Typography from '../../components/ui/Typography';
+import { usePlanillas } from '../../shared/context/PlanillasContext'; // Importar el hook del contexto
+import useAuth from '../../shared/hooks/useAuth';
+import Button from '../../shared/components/ui/Button';
+import Input from '../../shared/components/forms/Input';
+import Card from '../../shared/components/ui/Card';
+import Typography from '../../shared/components/ui/Typography';
 
 
 export default function CrearPlanilla() {

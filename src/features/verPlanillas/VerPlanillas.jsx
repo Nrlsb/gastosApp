@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { usePlanillas } from '../../context/PlanillasContext'; // Importar el hook del contexto
+import { usePlanillas } from '../../shared/context/PlanillasContext'; // Importar el hook del contexto
 
 
 export default function VerPlanillas() {

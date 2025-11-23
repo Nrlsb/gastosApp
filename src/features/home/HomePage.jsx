@@ -1,8 +1,8 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { signOut } from 'firebase/auth';
-import { auth } from '../../firebase';
-import useAuth from '../../hooks/useAuth';
+import { auth } from '../../services/firebase';
+import useAuth from '../../shared/hooks/useAuth';
 
 
 function HomePage() {

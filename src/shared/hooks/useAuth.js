@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { onAuthStateChanged, signInWithEmailAndPassword } from 'firebase/auth';
-import { auth } from '../firebase';
+import { auth } from '../../services/firebase';
 import { useToast } from '../context/ToastContext';
 import { useLoading } from '../context/LoadingContext';
 
