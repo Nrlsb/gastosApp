@@ -31,16 +31,24 @@ function GastosCompartidos() {
   // Manejador para limpiar todos los gastos
   const handleClearExpenses = useCallback(() => {
     setExpenses([]);
-  }, [setExpenses]);
+  }, []);
 
   // Manejador para eliminar un gasto individual
   const handleDeleteExpense = useCallback((id) => {
     setExpenses(expenses.filter(expense => expense.id !== id));
-  }, [expenses, setExpenses]);
+  }, [expenses]);
 
-  // Calcular el total
-  const totalExpenses = useMemo(() => {
-    return expenses.reduce((total, expense) => total + expense.amount, 0).toFixed(2);
+  // Calcular los totales por moneda
+  const totals = useMemo(() => {
+    return expenses.reduce((acc, expense) => {
+      const expenseCurrency = expense.currency || 'ARS'; // Default a ARS para gastos viejos
+      if (!acc[expenseCurrency]) {
+        acc[expenseCurrency] = 0;
+      }
+      // Los gastos compartidos se guardan con el monto total
+      acc[expenseCurrency] += expense.amount;
+      return acc;
+    }, {});
   }, [expenses]);
 
   return (
@@ -50,7 +58,17 @@ function GastosCompartidos() {
       {/* Resumen de Gastos */}
       <div className="card p-3 mb-4 bg-light">
         <div className="d-flex justify-content-between align-items-center">
-          <h2 className="h4 mb-0">Total: <span className="text-primary">${totalExpenses}</span></h2>
+          <h2 className="h4 mb-0">
+            Total: {Object.keys(totals).length > 0 ? (
+              Object.entries(totals).map(([currency, total]) => (
+                <span key={currency} className="text-primary me-3">
+                  {currency}: ${total.toFixed(2)}
+                </span>
+              ))
+            ) : (
+              <span className="text-primary">$0.00</span>
+            )}
+          </h2>
           <button className="btn btn-danger" onClick={handleClearExpenses}>
             Limpiar Gastos
           </button>
@@ -77,7 +95,7 @@ function GastosCompartidos() {
               {expenses.map(expense => (
                 <tr key={expense.id}>
                   <td>{expense.description}</td>
-                  <td>${expense.amount.toFixed(2)}</td>
+                  <td>{expense.currency || 'ARS'} ${expense.amount.toFixed(2)}</td>
                   <td>{expense.enCuotas ? `${expense.cuotaActual} / ${expense.totalCuotas}` : '-'}</td>
                   <td>{new Date(expense.id).toLocaleDateString()}</td>
                   <td className="text-end">

@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import { getDolarRate } from '../../services/dolarApi'; // Importar API del dólar
 
 function GastosPersonales() {
   // Estado para almacenar la lista de gastos, inicializado desde localStorage
@@ -10,10 +11,23 @@ function GastosPersonales() {
   // Estado para el formulario
   const [description, setDescription] = useState('');
   const [amount, setAmount] = useState('');
+  const [currency, setCurrency] = useState('ARS'); // Estado para la moneda
   const [esCompartido, setEsCompartido] = useState(false);
   const [enCuotas, setEnCuotas] = useState(false);
   const [totalCuotas, setTotalCuotas] = useState('');
   const [cuotaActual, setCuotaActual] = useState('');
+
+  // Estado para la cotización del dólar
+  const [dolarRate, setDolarRate] = useState(null);
+
+  // Efecto para obtener la cotización del dólar al montar el componente
+  useEffect(() => {
+    const fetchDolarRate = async () => {
+      const rate = await getDolarRate();
+      setDolarRate(rate);
+    };
+    fetchDolarRate();
+  }, []);
 
   // Efecto para guardar los gastos en localStorage cada vez que cambian
   useEffect(() => {
@@ -23,15 +37,13 @@ function GastosPersonales() {
   // Manejador para enviar el formulario
   const handleSubmit = useCallback((e) => {
     e.preventDefault();
-    // Validación simple
     if (!description || !amount || (enCuotas && (!cuotaActual || !totalCuotas))) return;
-
-    const finalAmount = esCompartido ? parseFloat(amount) / 2 : parseFloat(amount);
 
     const newExpense = {
       id: Date.now(),
       description,
-      amount: finalAmount,
+      amount: parseFloat(amount),
+      currency,
       esCompartido,
       enCuotas,
       cuotaActual: enCuotas ? parseInt(cuotaActual) : null,
@@ -41,7 +53,14 @@ function GastosPersonales() {
     if (esCompartido) {
       const savedSharedExpenses = localStorage.getItem('shared_expenses');
       const sharedExpenses = savedSharedExpenses ? JSON.parse(savedSharedExpenses) : [];
-      localStorage.setItem('shared_expenses', JSON.stringify([...sharedExpenses, newExpense]));
+      
+      // Para gastos compartidos, guardamos el monto original y la moneda
+      const sharedExpenseData = {
+        ...newExpense,
+        amount: parseFloat(amount) // Guardar el monto completo para el compartido
+      };
+
+      localStorage.setItem('shared_expenses', JSON.stringify([...sharedExpenses, sharedExpenseData]));
       alert(`Gasto "${newExpense.description}" agregado a Gastos Compartidos.`);
     } else {
       setExpenses(prevExpenses => [...prevExpenses, newExpense]);
@@ -50,25 +69,33 @@ function GastosPersonales() {
     // Limpiar formulario
     setDescription('');
     setAmount('');
+    setCurrency('ARS');
     setEsCompartido(false);
     setEnCuotas(false);
     setCuotaActual('');
     setTotalCuotas('');
-  }, [description, amount, enCuotas, cuotaActual, totalCuotas, esCompartido, setExpenses, setDescription, setAmount, setEsCompartido, setEnCuotas, setCuotaActual, setTotalCuotas]);
+  }, [description, amount, currency, enCuotas, cuotaActual, totalCuotas, esCompartido]);
 
   // Manejador para limpiar todos los gastos
   const handleClearExpenses = useCallback(() => {
     setExpenses([]);
-  }, [setExpenses]);
+  }, []);
 
   // Manejador para eliminar un gasto individual
   const handleDeleteExpense = useCallback((id) => {
     setExpenses(expenses.filter(expense => expense.id !== id));
-  }, [expenses, setExpenses]);
+  }, [expenses]);
 
-  // Calcular el total
-  const totalExpenses = useMemo(() => {
-    return expenses.reduce((total, expense) => total + expense.amount, 0).toFixed(2);
+  // Calcular los totales por moneda
+  const totals = useMemo(() => {
+    return expenses.reduce((acc, expense) => {
+      const expenseCurrency = expense.currency || 'ARS';
+      if (!acc[expenseCurrency]) {
+        acc[expenseCurrency] = 0;
+      }
+      acc[expenseCurrency] += expense.amount;
+      return acc;
+    }, {});
   }, [expenses]);
 
   return (
@@ -78,7 +105,17 @@ function GastosPersonales() {
       {/* Resumen de Gastos */}
       <div className="card p-3 mb-4 bg-light">
         <div className="d-flex justify-content-between align-items-center">
-          <h2 className="h4 mb-0">Total: <span className="text-primary">${totalExpenses}</span></h2>
+          <h2 className="h4 mb-0">
+            Total: {Object.keys(totals).length > 0 ? (
+              Object.entries(totals).map(([currency, total]) => (
+                <span key={currency} className="text-primary me-3">
+                  {currency}: ${total.toFixed(2)}
+                </span>
+              ))
+            ) : (
+              <span className="text-primary">$0.00</span>
+            )}
+          </h2>
           <button className="btn btn-danger" onClick={handleClearExpenses}>
             Limpiar Gastos
           </button>
@@ -90,8 +127,8 @@ function GastosPersonales() {
         <h2 className="h5 mb-3">Añadir Nuevo Gasto</h2>
         <form onSubmit={handleSubmit}>
           <div className="row g-3 align-items-end">
-            {/* Descripción y Monto */}
-            <div className="col-md-5">
+            {/* Descripción, Monto y Moneda */}
+            <div className="col-md-4">
               <label htmlFor="description_personal" className="form-label">Descripción</label>
               <input
                 type="text"
@@ -103,7 +140,7 @@ function GastosPersonales() {
                 required
               />
             </div>
-            <div className="col-md-3">
+            <div className="col-md-2">
               <label htmlFor="amount_personal" className="form-label">Monto</label>
               <input
                 type="number"
@@ -115,6 +152,23 @@ function GastosPersonales() {
                 placeholder="Ej: 50.25"
                 required
               />
+              {currency === 'USD' && amount > 0 && dolarRate && (
+                <small className="form-text text-muted">
+                  ~ ARS ${(amount * dolarRate).toFixed(2)}
+                </small>
+              )}
+            </div>
+            <div className="col-md-2">
+              <label htmlFor="currency_personal" className="form-label">Moneda</label>
+              <select 
+                id="currency_personal" 
+                className="form-select" 
+                value={currency} 
+                onChange={(e) => setCurrency(e.target.value)}
+              >
+                <option value="ARS">ARS</option>
+                <option value="USD">USD</option>
+              </select>
             </div>
 
             {/* Checkboxes */}
@@ -204,7 +258,7 @@ function GastosPersonales() {
               {expenses.map(expense => (
                 <tr key={expense.id}>
                   <td>{expense.description}</td>
-                  <td>${expense.amount.toFixed(2)}</td>
+                  <td>{expense.currency || 'ARS'} ${expense.amount.toFixed(2)}</td>
                   <td>{expense.enCuotas ? `${expense.cuotaActual} / ${expense.totalCuotas}` : '-'}</td>
                   <td>{new Date(expense.id).toLocaleDateString()}</td>
                   <td className="text-end">

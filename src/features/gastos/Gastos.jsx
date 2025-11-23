@@ -1,34 +1,47 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
 import { usePlanillas } from '../../shared/context/PlanillasContext'; // Importar el hook del contexto
-
+import { getDolarRate } from '../../services/dolarApi'; // Importar API del dólar
 
 function Gastos() {
   const { planillaId } = useParams();
-  const { planillas, loading: planillasLoading } = usePlanillas(); // Obtener planillas y loading del contexto
-  const localStorageKey = `expenses_${planillaId}`;
-
-  // Estado para almacenar la lista de gastos, inicializado desde localStorage
-  const [expenses, setExpenses] = useState(() => {
-    const savedExpenses = localStorage.getItem(localStorageKey);
-    return savedExpenses ? JSON.parse(savedExpenses) : [];
-  });
+  // Usar el contexto para la gestión de gastos
+  const { 
+    planillas, 
+    expenses, 
+    getExpenses, 
+    addExpense, 
+    updateExpense, 
+    deleteExpense, 
+    loading: planillasLoading 
+  } = usePlanillas();
 
   // Estado para el formulario
   const [description, setDescription] = useState('');
   const [amount, setAmount] = useState('');
+  const [currency, setCurrency] = useState('ARS'); // Estado para la moneda
   const [esCompartido, setEsCompartido] = useState(false);
   const [enCuotas, setEnCuotas] = useState(false);
   const [totalCuotas, setTotalCuotas] = useState('');
   const [cuotaActual, setCuotaActual] = useState('');
   
+  // Estado para la cotización del dólar
+  const [dolarRate, setDolarRate] = useState(null);
+  
   // Estado para manejar la edición
   const [editingId, setEditingId] = useState(null);
 
-  // Efecto para guardar los gastos en localStorage cada vez que cambian
+  // Efecto para obtener la cotización del dólar y los gastos iniciales
   useEffect(() => {
-    localStorage.setItem(localStorageKey, JSON.stringify(expenses));
-  }, [expenses, localStorageKey]);
+    const fetchInitialData = async () => {
+      const rate = await getDolarRate();
+      setDolarRate(rate);
+      if (planillaId) {
+        await getExpenses(planillaId);
+      }
+    };
+    fetchInitialData();
+  }, [planillaId, getExpenses]);
 
   // Buscar el nombre de la planilla actual
   const currentPlanilla = useMemo(() => {
@@ -42,6 +55,7 @@ function Gastos() {
   const resetForm = useCallback(() => {
     setDescription('');
     setAmount('');
+    setCurrency('ARS');
     setEsCompartido(false);
     setEnCuotas(false);
     setCuotaActual('');
@@ -50,33 +64,35 @@ function Gastos() {
   }, []);
 
   // Manejador para enviar el formulario (añadir o actualizar)
-  const handleSubmit = useCallback((e) => {
+  const handleSubmit = useCallback(async (e) => {
     e.preventDefault();
     if (!description || !amount || (enCuotas && (!cuotaActual || !totalCuotas))) return;
 
     const expenseData = {
       description,
       amount: parseFloat(amount),
+      currency,
       esCompartido,
       enCuotas,
       cuotaActual: enCuotas ? parseInt(cuotaActual) : null,
       totalCuotas: enCuotas ? parseInt(totalCuotas) : null,
+      createdAt: new Date(), // Añadir fecha de creación para ordenar
     };
 
-    if (editingId) {
-      // Actualizar gasto existente
-      setExpenses(
-        expenses.map(expense =>
-          expense.id === editingId ? { ...expense, ...expenseData } : expense
-        )
-      );
-    } else {
-      // Añadir nuevo gasto
-      setExpenses(prevExpenses => [...prevExpenses, { ...expenseData, id: Date.now() }]);
+    try {
+      if (editingId) {
+        // Actualizar gasto existente
+        await updateExpense(planillaId, editingId, expenseData);
+      } else {
+        // Añadir nuevo gasto
+        await addExpense(planillaId, expenseData);
+      }
+      resetForm();
+    } catch (error) {
+      console.error("Error saving expense:", error);
+      // Opcional: mostrar un mensaje de error al usuario
     }
-
-    resetForm();
-  }, [description, amount, esCompartido, enCuotas, cuotaActual, totalCuotas, editingId, expenses, resetForm]);
+  }, [description, amount, currency, esCompartido, enCuotas, cuotaActual, totalCuotas, editingId, planillaId, addExpense, updateExpense, resetForm]);
 
   // Cargar datos del gasto en el formulario para editar
   const handleEdit = useCallback((id) => {
@@ -85,35 +101,42 @@ function Gastos() {
       setEditingId(expenseToEdit.id);
       setDescription(expenseToEdit.description);
       setAmount(expenseToEdit.amount);
+      setCurrency(expenseToEdit.currency || 'ARS');
       setEsCompartido(expenseToEdit.esCompartido);
       setEnCuotas(expenseToEdit.enCuotas);
       setCuotaActual(expenseToEdit.cuotaActual || '');
       setTotalCuotas(expenseToEdit.totalCuotas || '');
     }
-  }, [expenses, setEditingId, setDescription, setAmount, setEsCompartido, setEnCuotas, setCuotaActual, setTotalCuotas]);
+  }, [expenses]);
   
   // Manejador para cancelar la edición
   const handleCancelEdit = useCallback(() => {
     resetForm();
   }, [resetForm]);
 
-  // Manejador para limpiar todos los gastos
-  const handleClearExpenses = useCallback(() => {
-    setExpenses([]);
-  }, [setExpenses]);
-
   // Manejador para eliminar un gasto individual
-  const handleDeleteExpense = useCallback((id) => {
-    setExpenses(expenses.filter(expense => expense.id !== id));
-  }, [expenses, setExpenses]);
+  const handleDeleteExpense = useCallback(async (id) => {
+    if (window.confirm('¿Estás seguro de que quieres eliminar este gasto?')) {
+      try {
+        await deleteExpense(planillaId, id);
+      } catch (error) {
+        console.error("Error deleting expense:", error);
+      }
+    }
+  }, [planillaId, deleteExpense]);
 
-  // Calcular el total
-  const totalExpenses = React.useMemo(() => {
-    return expenses.reduce((total, expense) => total + (expense.esCompartido ? expense.amount / 2 : expense.amount), 0).toFixed(2);
-  }, [expenses]);
+  // Calcular el total de gastos personales en ARS
+  const totalPersonalARS = useMemo(() => {
+    if (!dolarRate) return 0;
+    return expenses.reduce((acc, expense) => {
+      const amountInARS = expense.currency === 'USD' ? expense.amount * dolarRate : expense.amount;
+      const personalAmount = expense.esCompartido ? amountInARS / 2 : amountInARS;
+      return acc + personalAmount;
+    }, 0);
+  }, [expenses, dolarRate]);
 
-  if (planillasLoading) {
-    return <div className="container mt-5">Cargando planilla...</div>;
+  if (planillasLoading || !dolarRate) {
+    return <div className="container mt-5">Cargando datos...</div>;
   }
 
   return (
@@ -123,10 +146,9 @@ function Gastos() {
       {/* Resumen de Gastos */}
       <div className="card p-3 mb-4 bg-light">
         <div className="d-flex justify-content-between align-items-center">
-          <h2 className="h4 mb-0">Total: <span className="text-primary">${totalExpenses}</span></h2>
-          <button className="btn btn-danger" onClick={handleClearExpenses}>
-            Limpiar Gastos
-          </button>
+          <h2 className="h4 mb-0">
+            Gasto Personal Total: <span className="text-primary">ARS ${totalPersonalARS.toFixed(2)}</span>
+          </h2>
         </div>
       </div>
 
@@ -135,8 +157,8 @@ function Gastos() {
         <h2 className="h5 mb-3">{editingId ? 'Editar Gasto' : 'Añadir Nuevo Gasto'}</h2>
         <form onSubmit={handleSubmit}>
           <div className="row g-3 align-items-end">
-            {/* Descripción y Monto */}
-            <div className="col-md-5">
+            {/* Descripción, Monto y Moneda */}
+            <div className="col-md-4">
               <label htmlFor="description_personal" className="form-label">Descripción</label>
               <input
                 type="text"
@@ -148,7 +170,7 @@ function Gastos() {
                 required
               />
             </div>
-            <div className="col-md-3">
+            <div className="col-md-2">
               <label htmlFor="amount_personal" className="form-label">Monto</label>
               <input
                 type="number"
@@ -160,6 +182,23 @@ function Gastos() {
                 placeholder="Ej: 50.25"
                 required
               />
+              {currency === 'USD' && amount > 0 && dolarRate && (
+                <small className="form-text text-muted">
+                  ~ ARS ${(amount * dolarRate).toFixed(2)}
+                </small>
+              )}
+            </div>
+            <div className="col-md-2">
+              <label htmlFor="currency" className="form-label">Moneda</label>
+              <select 
+                id="currency" 
+                className="form-select" 
+                value={currency} 
+                onChange={(e) => setCurrency(e.target.value)}
+              >
+                <option value="ARS">ARS</option>
+                <option value="USD">USD</option>
+              </select>
             </div>
 
             {/* Checkboxes */}
@@ -246,8 +285,9 @@ function Gastos() {
             <thead className="table-dark">
               <tr>
                 <th scope="col">Descripción</th>
-                <th scope="col">Monto Total</th>
-                <th scope="col">Monto Personal</th>
+                <th scope="col">Monto Total (ARS)</th>
+                <th scope="col">Monto Personal (ARS)</th>
+                <th scope="col">Monto en Dólares</th>
                 <th scope="col">Cuotas</th>
                 <th scope="col">Tipo</th>
                 <th scope="col">Fecha</th>
@@ -255,35 +295,42 @@ function Gastos() {
               </tr>
             </thead>
             <tbody>
-              {expenses.map(expense => (
-                <tr key={expense.id}>
-                  <td>{expense.description}</td>
-                  <td>${expense.amount.toFixed(2)}</td>
-                  <td>${(expense.esCompartido ? expense.amount / 2 : expense.amount).toFixed(2)}</td>
-                  <td>{expense.enCuotas ? `${expense.cuotaActual} / ${expense.totalCuotas}` : '-'}</td>
-                  <td>
-                    <span className={`badge ${expense.esCompartido ? 'bg-info text-dark' : 'bg-light text-dark'}`}>
-                      {expense.esCompartido ? 'Compartido' : 'Personal'}
-                    </span>
-                  </td>
-                  <td>{new Date(expense.id).toLocaleDateString()}</td>
-                  <td className="text-end">
-                    <button className="btn btn-sm btn-outline-secondary me-2" onClick={() => handleEdit(expense.id)}>
-                      Editar
-                    </button>
-                    <button className="btn btn-sm btn-outline-danger" onClick={() => handleDeleteExpense(expense.id)}>
-                      Eliminar
-                    </button>
-                  </td>
-                </tr>
-              ))}
+              {expenses.map(expense => {
+                const montoTotalArs = expense.currency === 'USD' ? expense.amount * dolarRate : expense.amount;
+                const montoPersonalArs = expense.esCompartido ? montoTotalArs / 2 : montoTotalArs;
+                const montoDolares = expense.currency === 'ARS' ? expense.amount / dolarRate : expense.amount;
+
+                return (
+                  <tr key={expense.id}>
+                    <td>{expense.description}</td>
+                    <td>ARS ${montoTotalArs.toFixed(2)}</td>
+                    <td>ARS ${montoPersonalArs.toFixed(2)}</td>
+                    <td>USD ${montoDolares.toFixed(2)}</td>
+                    <td>{expense.enCuotas ? `${expense.cuotaActual} / ${expense.totalCuotas}` : '-'}</td>
+                    <td>
+                      <span className={`badge ${expense.esCompartido ? 'bg-info text-dark' : 'bg-light text-dark'}`}>
+                        {expense.esCompartido ? 'Compartido' : 'Personal'}
+                      </span>
+                    </td>
+                    <td>{expense.createdAt ? new Date(expense.createdAt.seconds * 1000).toLocaleDateString() : '-'}</td>
+                    <td className="text-end">
+                      <button className="btn btn-sm btn-outline-secondary me-2" onClick={() => handleEdit(expense.id)}>
+                        Editar
+                      </button>
+                      <button className="btn btn-sm btn-outline-danger" onClick={() => handleDeleteExpense(expense.id)}>
+                        Eliminar
+                      </button>
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
             <tfoot className="table-group-divider">
               <tr>
-                <td className="fw-bold">Total</td>
+                <td className="fw-bold">Total Personal</td>
                 <td></td>
-                <td className="fw-bold">${totalExpenses}</td>
-                <td colSpan="4"></td>
+                <td className="fw-bold">ARS ${totalPersonalARS.toFixed(2)}</td>
+                <td colSpan="5"></td>
               </tr>
             </tfoot>
           </table>
