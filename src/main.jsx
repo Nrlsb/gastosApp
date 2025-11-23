@@ -6,11 +6,17 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 
 import './index.css';
 import App from './App.jsx';
+import { ToastProvider } from './context/ToastContext.jsx';
+import { LoadingProvider } from './context/LoadingContext.jsx';
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <BrowserRouter>
-      <App />
+      <ToastProvider>
+        <LoadingProvider>
+          <App />
+        </LoadingProvider>
+      </ToastProvider>
     </BrowserRouter>
   </StrictMode>,
 );
