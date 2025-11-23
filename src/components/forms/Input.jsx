@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react';
 
 const Input = ({ label, id, type = 'text', className = '', ...props }) => {
   const inputClasses = `form-control ${className}`.trim();
@@ -17,4 +17,4 @@ const Input = ({ label, id, type = 'text', className = '', ...props }) => {
   );
 };
 
-export default Input;
+export default memo(Input);

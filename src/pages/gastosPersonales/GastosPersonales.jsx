@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 
 function GastosPersonales() {
   // Estado para almacenar la lista de gastos, inicializado desde localStorage
@@ -21,7 +21,7 @@ function GastosPersonales() {
   }, [expenses]);
 
   // Manejador para enviar el formulario
-  const handleSubmit = (e) => {
+  const handleSubmit = useCallback((e) => {
     e.preventDefault();
     // Validación simple
     if (!description || !amount || (enCuotas && (!cuotaActual || !totalCuotas))) return;
@@ -44,7 +44,7 @@ function GastosPersonales() {
       localStorage.setItem('shared_expenses', JSON.stringify([...sharedExpenses, newExpense]));
       alert(`Gasto "${newExpense.description}" agregado a Gastos Compartidos.`);
     } else {
-      setExpenses([...expenses, newExpense]);
+      setExpenses(prevExpenses => [...prevExpenses, newExpense]);
     }
 
     // Limpiar formulario
@@ -54,20 +54,22 @@ function GastosPersonales() {
     setEnCuotas(false);
     setCuotaActual('');
     setTotalCuotas('');
-  };
+  }, [description, amount, enCuotas, cuotaActual, totalCuotas, esCompartido, setExpenses, setDescription, setAmount, setEsCompartido, setEnCuotas, setCuotaActual, setTotalCuotas]);
 
   // Manejador para limpiar todos los gastos
-  const handleClearExpenses = () => {
+  const handleClearExpenses = useCallback(() => {
     setExpenses([]);
-  };
+  }, [setExpenses]);
 
   // Manejador para eliminar un gasto individual
-  const handleDeleteExpense = (id) => {
+  const handleDeleteExpense = useCallback((id) => {
     setExpenses(expenses.filter(expense => expense.id !== id));
-  };
+  }, [expenses, setExpenses]);
 
   // Calcular el total
-  const totalExpenses = expenses.reduce((total, expense) => total + expense.amount, 0).toFixed(2);
+  const totalExpenses = useMemo(() => {
+    return expenses.reduce((total, expense) => total + expense.amount, 0).toFixed(2);
+  }, [expenses]);
 
   return (
     <div className="container mt-5">

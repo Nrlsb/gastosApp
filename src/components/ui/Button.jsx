@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { memo } from 'react';
 
-const Button = ({ children, variant = 'primary', size, className = '', ...props }) => {
+const Button = memo(({ children, variant = 'primary', size, className = '', ...props }) => {
   const baseClasses = 'btn';
   const variantClass = `btn-${variant}`;
   const sizeClass = size ? `btn-${size}` : '';
@@ -12,6 +12,6 @@ const Button = ({ children, variant = 'primary', size, className = '', ...props 
       {children}
     </button>
   );
-};
+});
 
 export default Button;

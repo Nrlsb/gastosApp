@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 
 function GastosCompartidos() {
   // Estado para almacenar la lista de gastos, inicializado desde localStorage
@@ -29,17 +29,19 @@ function GastosCompartidos() {
 
 
   // Manejador para limpiar todos los gastos
-  const handleClearExpenses = () => {
+  const handleClearExpenses = useCallback(() => {
     setExpenses([]);
-  };
+  }, [setExpenses]);
 
   // Manejador para eliminar un gasto individual
-  const handleDeleteExpense = (id) => {
+  const handleDeleteExpense = useCallback((id) => {
     setExpenses(expenses.filter(expense => expense.id !== id));
-  };
+  }, [expenses, setExpenses]);
 
   // Calcular el total
-  const totalExpenses = expenses.reduce((total, expense) => total + expense.amount, 0).toFixed(2);
+  const totalExpenses = useMemo(() => {
+    return expenses.reduce((total, expense) => total + expense.amount, 0).toFixed(2);
+  }, [expenses]);
 
   return (
     <div className="container mt-5">

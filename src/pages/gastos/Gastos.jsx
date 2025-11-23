@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
 import { usePlanillas } from '../../context/PlanillasContext'; // Importar el hook del contexto
 
@@ -31,11 +31,15 @@ function Gastos() {
   }, [expenses, localStorageKey]);
 
   // Buscar el nombre de la planilla actual
-  const currentPlanilla = planillas.find(p => p.id === planillaId);
-  const planillaName = currentPlanilla ? currentPlanilla.nombre : 'Cargando...';
+  const currentPlanilla = useMemo(() => {
+    return planillas.find(p => p.id === planillaId);
+  }, [planillas, planillaId]);
+  const planillaName = useMemo(() => {
+    return currentPlanilla ? currentPlanilla.nombre : 'Cargando...';
+  }, [currentPlanilla]);
 
   // Limpiar formulario y salir del modo edición
-  const resetForm = () => {
+  const resetForm = useCallback(() => {
     setDescription('');
     setAmount('');
     setEsCompartido(false);
@@ -43,10 +47,10 @@ function Gastos() {
     setCuotaActual('');
     setTotalCuotas('');
     setEditingId(null);
-  };
+  }, []);
 
   // Manejador para enviar el formulario (añadir o actualizar)
-  const handleSubmit = (e) => {
+  const handleSubmit = useCallback((e) => {
     e.preventDefault();
     if (!description || !amount || (enCuotas && (!cuotaActual || !totalCuotas))) return;
 
@@ -68,14 +72,14 @@ function Gastos() {
       );
     } else {
       // Añadir nuevo gasto
-      setExpenses([...expenses, { ...expenseData, id: Date.now() }]);
+      setExpenses(prevExpenses => [...prevExpenses, { ...expenseData, id: Date.now() }]);
     }
 
     resetForm();
-  };
+  }, [description, amount, enCuotas, cuotaActual, totalCuotas, editingId, expenses, resetForm]);
 
   // Cargar datos del gasto en el formulario para editar
-  const handleEdit = (id) => {
+  const handleEdit = useCallback((id) => {
     const expenseToEdit = expenses.find(expense => expense.id === id);
     if (expenseToEdit) {
       setEditingId(expenseToEdit.id);
@@ -86,25 +90,27 @@ function Gastos() {
       setCuotaActual(expenseToEdit.cuotaActual || '');
       setTotalCuotas(expenseToEdit.totalCuotas || '');
     }
-  };
+  }, [expenses, setEditingId, setDescription, setAmount, setEsCompartido, setEnCuotas, setCuotaActual, setTotalCuotas]);
   
   // Manejador para cancelar la edición
-  const handleCancelEdit = () => {
+  const handleCancelEdit = useCallback(() => {
     resetForm();
-  };
+  }, [resetForm]);
 
   // Manejador para limpiar todos los gastos
-  const handleClearExpenses = () => {
+  const handleClearExpenses = useCallback(() => {
     setExpenses([]);
-  };
+  }, [setExpenses]);
 
   // Manejador para eliminar un gasto individual
-  const handleDeleteExpense = (id) => {
+  const handleDeleteExpense = useCallback((id) => {
     setExpenses(expenses.filter(expense => expense.id !== id));
-  };
+  }, [expenses, setExpenses]);
 
   // Calcular el total
-  const totalExpenses = expenses.reduce((total, expense) => total + (expense.esCompartido ? expense.amount / 2 : expense.amount), 0).toFixed(2);
+  const totalExpenses = React.useMemo(() => {
+    return expenses.reduce((total, expense) => total + (expense.esCompartido ? expense.amount / 2 : expense.amount), 0).toFixed(2);
+  }, [expenses]);
 
   if (planillasLoading) {
     return <div className="container mt-5">Cargando planilla...</div>;

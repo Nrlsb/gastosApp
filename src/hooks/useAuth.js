@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { onAuthStateChanged, signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../firebase';
 import { useToast } from '../context/ToastContext';
@@ -19,7 +19,7 @@ const useAuth = () => {
     return unsubscribe;
   }, []);
 
-  const login = async (email, password) => {
+  const login = useCallback(async (email, password) => {
     showLoading('Iniciando sesión...');
     try {
       await signInWithEmailAndPassword(auth, email, password);
@@ -31,9 +31,11 @@ const useAuth = () => {
     } finally {
       hideLoading();
     }
-  };
+  }, [showLoading, showToast]);
 
-  return { currentUser, loading, login };
+  const authValue = useMemo(() => ({ currentUser, loading, login }), [currentUser, loading, login]);
+
+  return authValue;
 };
 
 export default useAuth;

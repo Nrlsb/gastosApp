@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useMemo, useCallback } from 'react';
 import { db } from '../firebase';
 import { collection, getDocs, addDoc, updateDoc, deleteDoc, doc } from 'firebase/firestore';
 
@@ -32,7 +32,7 @@ export const PlanillasProvider = ({ children }) => {
   }, []);
 
   // CRUD operations
-  const addPlanilla = async (newPlanilla) => {
+  const addPlanilla = useCallback(async (newPlanilla) => {
     try {
       const docRef = await addDoc(planillasCollectionRef, newPlanilla);
       // Re-fetch or update state locally
@@ -43,9 +43,9 @@ export const PlanillasProvider = ({ children }) => {
       setError(err);
       throw err; // Re-lanzar el error para que el componente que llama pueda manejarlo
     }
-  };
+  }, [planillasCollectionRef]);
 
-  const updatePlanilla = async (id, updatedPlanilla) => {
+  const updatePlanilla = useCallback(async (id, updatedPlanilla) => {
     try {
       const planillaDoc = doc(db, 'planillas', id);
       await updateDoc(planillaDoc, updatedPlanilla);
@@ -55,9 +55,9 @@ export const PlanillasProvider = ({ children }) => {
     } catch (err) {
       setError(err);
     }
-  };
+  }, [planillasCollectionRef]);
 
-  const deletePlanilla = async (id) => {
+  const deletePlanilla = useCallback(async (id) => {
     try {
       const planillaDoc = doc(db, 'planillas', id);
       await deleteDoc(planillaDoc);
@@ -67,16 +67,16 @@ export const PlanillasProvider = ({ children }) => {
     } catch (err) {
       setError(err);
     }
-  };
+  }, [planillasCollectionRef]);
 
-  const value = {
+  const value = useMemo(() => ({
     planillas,
     loading,
     error,
     addPlanilla,
     updatePlanilla,
     deletePlanilla,
-  };
+  }), [planillas, loading, error, addPlanilla, updatePlanilla, deletePlanilla]);
 
   return (
     <PlanillasContext.Provider value={value}>

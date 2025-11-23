@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { memo } from 'react';
 import PropTypes from 'prop-types';
 
-const Toast = ({ message, type, onClose }) => {
+const Toast = memo(({ message, type, onClose }) => {
   if (!message) return null;
 
   const alertClass = `alert alert-${type} alert-dismissible fade show`;
@@ -14,7 +14,7 @@ const Toast = ({ message, type, onClose }) => {
       </div>
     </div>
   );
-};
+});
 
 Toast.propTypes = {
   message: PropTypes.string,

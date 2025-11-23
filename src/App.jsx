@@ -1,12 +1,16 @@
+import { lazy, Suspense } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { useToast } from './context/ToastContext';
 import ErrorBoundary from './components/ErrorBoundaries';
 
-import HomePage from './pages/home/HomePage';
-import CrearPlanilla from './pages/crearPlanilla/CrearPlanilla';
-import VerPlanillas from './pages/verPlanillas/VerPlanillas';
-import Gastos from './pages/gastos/Gastos';
-import LoginPage from './pages/login/LoginPage';
+const HomePage = lazy(() => import('./pages/home/HomePage'));
+const CrearPlanilla = lazy(() => import('./pages/crearPlanilla/CrearPlanilla'));
+const VerPlanillas = lazy(() => import('./pages/verPlanillas/VerPlanillas'));
+const Gastos = lazy(() => import('./pages/gastos/Gastos'));
+const GastosCompartidos = lazy(() => import('./pages/gastosCompartidos/GastosCompartidos'));
+const GastosPersonales = lazy(() => import('./pages/gastosPersonales/GastosPersonales'));
+const LoginPage = lazy(() => import('./pages/login/LoginPage'));
+import LoadingSpinner from './components/ui/LoadingSpinner';
 import useAuth from './hooks/useAuth';
 import { PlanillasProvider } from './context/PlanillasContext';
 
@@ -30,7 +34,8 @@ function App() {
   return (
     <ErrorBoundary showToast={showToast}>
       <PlanillasProvider>
-        <Routes>
+        <Suspense fallback={<LoadingSpinner />}>
+          <Routes>
           <Route path="/login" element={<LoginPage />} />
           <Route
             path="/"
@@ -64,7 +69,24 @@ function App() {
               </ProtectedRoute>
             }
           />
+          <Route
+            path="/gastos-compartidos"
+            element={
+              <ProtectedRoute>
+                <GastosCompartidos />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/gastos-personales"
+            element={
+              <ProtectedRoute>
+                <GastosPersonales />
+              </ProtectedRoute>
+            }
+          />
         </Routes>
+        </Suspense>
       </PlanillasProvider>
     </ErrorBoundary>
   );

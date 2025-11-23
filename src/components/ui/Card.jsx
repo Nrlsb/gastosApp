@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { memo } from 'react';
 
-const Card = ({ children, className = '', ...props }) => {
+const Card = memo(({ children, className = '', ...props }) => {
   const allClasses = `card p-4 shadow-lg ${className}`.trim(); // Using p-4 and shadow-lg as default based on CrearPlanilla.jsx
 
   return (
@@ -8,6 +8,6 @@ const Card = ({ children, className = '', ...props }) => {
       {children}
     </div>
   );
-};
+});
 
 export default Card;
