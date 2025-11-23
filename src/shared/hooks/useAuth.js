@@ -31,7 +31,7 @@ const useAuth = () => {
     } finally {
       hideLoading();
     }
-  }, [showLoading, showToast]);
+  }, [showLoading, hideLoading, showToast]);
 
   const authValue = useMemo(() => ({ currentUser, loading, login }), [currentUser, loading, login]);
 

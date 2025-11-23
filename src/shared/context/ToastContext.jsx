@@ -3,6 +3,7 @@ import Toast from '../components/ui/Toast';
 
 const ToastContext = createContext(null);
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const useToast = () => {
   return useContext(ToastContext);
 };

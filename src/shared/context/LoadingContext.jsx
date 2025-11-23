@@ -3,6 +3,7 @@ import LoadingSpinner from '../components/ui/LoadingSpinner';
 
 const LoadingContext = createContext(null);
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const useLoading = () => {
   return useContext(LoadingContext);
 };

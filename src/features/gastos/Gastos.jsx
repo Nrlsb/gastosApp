@@ -76,7 +76,7 @@ function Gastos() {
     }
 
     resetForm();
-  }, [description, amount, enCuotas, cuotaActual, totalCuotas, editingId, expenses, resetForm]);
+  }, [description, amount, esCompartido, enCuotas, cuotaActual, totalCuotas, editingId, expenses, resetForm]);
 
   // Cargar datos del gasto en el formulario para editar
   const handleEdit = useCallback((id) => {

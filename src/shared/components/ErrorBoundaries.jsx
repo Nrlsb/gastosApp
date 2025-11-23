@@ -56,7 +56,7 @@ ErrorBoundary.propTypes = {
 };
 
 ErrorBoundary.defaultProps = {
-  showDetails: process.env.NODE_ENV === 'development', // Show details only in development
+  showDetails: import.meta.env.DEV, // Show details only in development
   fallbackComponent: null,
   showToast: null,
 };

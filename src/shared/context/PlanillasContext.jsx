@@ -4,6 +4,7 @@ import { collection, getDocs, addDoc, updateDoc, deleteDoc, doc } from 'firebase
 
 const PlanillasContext = createContext();
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const usePlanillas = () => {
   return useContext(PlanillasContext);
 };
@@ -29,7 +30,7 @@ export const PlanillasProvider = ({ children }) => {
     };
 
     getPlanillas();
-  }, []);
+  }, [planillasCollectionRef]);
 
   // CRUD operations
   const addPlanilla = useCallback(async (newPlanilla) => {
