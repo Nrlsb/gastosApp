@@ -8,7 +8,7 @@ import './CrearPlanilla.css';
 export default function CrearPlanilla() {
   const [nombrePlanilla, setNombrePlanilla] = useState('');
   const navigate = useNavigate();
-  const { user } = useAuth(); // Obtener el usuario autenticado
+  const { currentUser } = useAuth(); // Obtener el usuario autenticado
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -17,7 +17,7 @@ export default function CrearPlanilla() {
       return;
     }
 
-    if (!user) {
+    if (!currentUser) {
       alert('Debes iniciar sesión para crear una planilla.');
       navigate('/login'); // Redirigir al login si no hay usuario
       return;
@@ -26,7 +26,7 @@ export default function CrearPlanilla() {
     try {
       const docRef = await addDoc(collection(db, 'planillas'), {
         nombre: nombrePlanilla,
-        userId: user.uid, // Asociar la planilla con el ID del usuario
+        userId: currentUser.uid, // Asociar la planilla con el ID del usuario
         createdAt: new Date(),
       });
       navigate(`/gastos/${docRef.id}`);
