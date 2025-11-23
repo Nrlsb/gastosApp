@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, useMemo, useCallback } from 'react';
 import { db } from '../../services/firebase';
-import { collection, getDocs, addDoc, updateDoc, deleteDoc, doc, query, where } from 'firebase/firestore';
+import { collection, getDocs, addDoc, updateDoc, deleteDoc, doc, query, where, getDoc } from 'firebase/firestore';
 import useAuth from '../hooks/useAuth';
 
 const PlanillasContext = createContext();
@@ -77,6 +77,48 @@ export const PlanillasProvider = ({ children }) => {
     }
   }, [fetchPlanillas]);
 
+  const clonePlanilla = useCallback(async (sourcePlanillaId, newPlanillaName) => {
+    try {
+      // 1. Get source planilla data
+      const sourcePlanillaDocRef = doc(db, 'planillas', sourcePlanillaId);
+      const sourcePlanillaSnap = await getDoc(sourcePlanillaDocRef);
+
+      if (!sourcePlanillaSnap.exists()) {
+        throw new Error("La planilla de origen no existe.");
+      }
+
+      const sourcePlanillaData = sourcePlanillaSnap.data();
+
+      // 2. Create the new planilla
+      const newPlanillaData = {
+        ...sourcePlanillaData,
+        nombre: newPlanillaName,
+        createdAt: new Date() // Opcional: actualizar la fecha de creación
+      };
+      const newPlanillaDocRef = await addDoc(planillasCollectionRef, newPlanillaData);
+
+      // 3. Copy expenses
+      const sourceExpensesRef = collection(db, 'planillas', sourcePlanillaId, 'expenses');
+      const newExpensesRef = collection(db, 'planillas', newPlanillaDocRef.id, 'expenses');
+      
+      const expensesSnapshot = await getDocs(sourceExpensesRef);
+      
+      const copyPromises = expensesSnapshot.docs.map(expenseDoc => {
+        return addDoc(newExpensesRef, expenseDoc.data());
+      });
+      
+      await Promise.all(copyPromises);
+
+      // 4. Re-fetch planillas to update UI
+      await fetchPlanillas();
+
+    } catch (err) {
+      setError(err);
+      console.error("Error al clonar la planilla:", err);
+      throw err;
+    }
+  }, [planillasCollectionRef, fetchPlanillas]);
+
   // CRUD operations for Expenses
   const getExpenses = useCallback(async (planillaId) => {
     if (!planillaId) return;
@@ -135,11 +177,12 @@ export const PlanillasProvider = ({ children }) => {
     addPlanilla,
     updatePlanilla,
     deletePlanilla,
+    clonePlanilla,
     getExpenses,
     addExpense,
     updateExpense,
     deleteExpense,
-  }), [planillas, expenses, loading, error, addPlanilla, updatePlanilla, deletePlanilla, getExpenses, addExpense, updateExpense, deleteExpense]);
+  }), [planillas, expenses, loading, error, addPlanilla, updatePlanilla, deletePlanilla, clonePlanilla, getExpenses, addExpense, updateExpense, deleteExpense]);
 
   return (
     <PlanillasContext.Provider value={value}>

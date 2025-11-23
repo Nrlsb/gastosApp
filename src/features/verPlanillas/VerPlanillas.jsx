@@ -4,7 +4,7 @@ import { usePlanillas } from '../../shared/context/PlanillasContext'; // Importa
 
 
 export default function VerPlanillas() {
-  const { planillas, loading, deletePlanilla, error } = usePlanillas(); // Usar el hook del contexto
+  const { planillas, loading, deletePlanilla, clonePlanilla, error } = usePlanillas(); // Usar el hook del contexto
 
   const handleEliminarPlanilla = async (id, nombre) => {
     if (window.confirm(`¿Estás seguro de que quieres eliminar la planilla "${nombre}"?`)) {
@@ -14,6 +14,19 @@ export default function VerPlanillas() {
       } catch (err) {
         console.error('Error al eliminar la planilla:', err);
         alert('Hubo un error al eliminar la planilla. Por favor, inténtalo de nuevo.');
+      }
+    }
+  };
+
+  const handleClonarPlanilla = async (id, nombre) => {
+    const nuevoNombre = window.prompt(`Ingresa el nuevo nombre para la planilla clonada:`, `${nombre} - Copia`);
+    if (nuevoNombre) {
+      try {
+        await clonePlanilla(id, nuevoNombre);
+        alert(`Planilla "${nombre}" clonada con éxito como "${nuevoNombre}".`);
+      } catch (err) {
+        console.error('Error al clonar la planilla:', err);
+        alert('Hubo un error al clonar la planilla. Por favor, inténtalo de nuevo.');
       }
     }
   };
@@ -49,6 +62,12 @@ export default function VerPlanillas() {
                 className="button-eliminar"
               >
                 Eliminar
+              </button>
+              <button
+                onClick={() => handleClonarPlanilla(planilla.id, planilla.nombre)}
+                className="button-clonar"
+              >
+                Clonar
               </button>
             </div>
           ))}
