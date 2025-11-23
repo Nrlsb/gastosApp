@@ -1,3 +1,5 @@
+@import './styles/variables.css';
+
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
@@ -5,7 +7,7 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background-color: #f0f2f5;
+  background-color: var(--color-background);
 }
 
 code {
@@ -14,138 +16,138 @@ code {
 }
 
 .card {
-  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-  transition: all 0.2s ease-in-out;
+  box-shadow: var(--shadow-md);
+  transition: var(--transition-ease-in-out);
 }
 
 .card:hover {
-  box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+  box-shadow: var(--shadow-xxl);
 }
 
 .btn-primary {
-  background-color: #007bff;
-  border-color: #007bff;
+  background-color: var(--color-primary);
+  border-color: var(--color-primary);
 }
 
 .btn-danger {
-  background-color: #dc3545;
-  border-color: #dc3545;
+  background-color: var(--color-danger);
+  border-color: var(--color-danger);
 }
 
 .badge.bg-secondary {
-  font-size: 0.9em;
-  padding: 0.5em 0.75em;
+  font-size: var(--font-size-md);
+  padding: var(--spacing-md) var(--spacing-lg); /* Adjusted to use spacing variables */
 }
 
 .ver-planillas-container {
   width: 100%;
   max-width: 900px;
-  margin: 2rem auto;
-  padding: 2rem;
+  margin: var(--spacing-xxl) auto;
+  padding: var(--spacing-xxl);
 }
 
 .ver-planillas-container h1 {
   text-align: center;
-  color: #2c3e50;
-  margin-bottom: 2rem;
+  color: var(--color-text-dark);
+  margin-bottom: var(--spacing-xxl);
 }
 
 .no-planillas {
   text-align: center;
-  padding: 3rem;
-  background-color: #fff;
-  border-radius: 8px;
-  box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+  padding: var(--spacing-xxxl);
+  background-color: var(--color-white);
+  border-radius: var(--border-radius-md);
+  box-shadow: var(--shadow-sm);
 }
 
 .no-planillas p {
-  font-size: 1.2rem;
-  color: #7f8c8d;
-  margin-bottom: 1.5rem;
+  font-size: var(--font-size-lg);
+  color: var(--color-text-medium);
+  margin-bottom: var(--spacing-xl);
 }
 
 .button-crear {
-  padding: 0.8rem 1.5rem;
-  font-size: 1rem;
+  padding: var(--spacing-lg) var(--spacing-xl);
+  font-size: var(--font-size-base);
   font-weight: bold;
   text-decoration: none;
-  color: white;
-  background-color: #3498db;
-  border-radius: 5px;
-  transition: background-color 0.3s;
+  color: var(--color-white);
+  background-color: var(--color-info);
+  border-radius: var(--border-radius-sm);
+  transition: var(--transition-color-ease);
 }
 
 .button-crear:hover {
-  background-color: #2980b9;
+  background-color: var(--color-info-hover);
 }
 
 .lista-planillas {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-  gap: 1.5rem;
+  gap: var(--spacing-xl);
 }
 
 .planilla-card {
-  background-color: #fff;
-  border-radius: 8px;
-  padding: 1.5rem;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  background-color: var(--color-white);
+  border-radius: var(--border-radius-md);
+  padding: var(--spacing-xl);
+  box-shadow: var(--shadow-lg);
   text-decoration: none;
   color: inherit;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  transition: transform 0.2s, box-shadow 0.2s;
+  transition: var(--transition-transform-shadow);
   flex-grow: 1; /* Permite que la tarjeta crezca */
 }
 
 .planilla-card:hover {
   transform: translateY(-5px);
-  box-shadow: 0 8px 15px rgba(0,0,0,0.15);
+  box-shadow: var(--shadow-xl);
 }
 
 .planilla-card h2 {
-  font-size: 1.4rem;
-  color: #34495e;
-  margin: 0 0 1rem 0;
+  font-size: var(--font-size-xl);
+  color: var(--color-secondary-dark);
+  margin: 0 0 var(--spacing-lg) 0;
 }
 
 .tipo-tag {
   align-self: flex-start;
-  padding: 0.3rem 0.7rem;
-  border-radius: 15px;
-  font-size: 0.8rem;
+  padding: var(--spacing-xs) var(--spacing-md);
+  border-radius: var(--border-radius-lg);
+  font-size: var(--font-size-sm);
   font-weight: bold;
-  color: #fff;
+  color: var(--color-white);
   text-transform: capitalize;
 }
 
 .tipo-tag.personal {
-  background-color: #2980b9;
+  background-color: var(--color-tag-personal);
 }
 
 .tipo-tag.compartida {
-  background-color: #8e44ad;
+  background-color: var(--color-tag-compartida);
 }
 
 .planilla-card-container {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem; /* Espacio entre la tarjeta y el botón */
+  gap: var(--spacing-sm); /* Espacio entre la tarjeta y el botón */
 }
 
 .button-eliminar {
-  padding: 0.6rem 1rem;
-  font-size: 0.9rem;
+  padding: var(--spacing-md) var(--spacing-lg);
+  font-size: var(--font-size-md);
   font-weight: bold;
-  color: white;
-  background-color: #e74c3c; /* Rojo para eliminar */
+  color: var(--color-white);
+  background-color: var(--color-delete-button);
   border: none;
-  border-radius: 5px;
+  border-radius: var(--border-radius-sm);
   cursor: pointer;
-  transition: background-color 0.3s;
+  transition: var(--transition-color-ease);
 }
 
 .button-eliminar:hover {
-  background-color: #c0392b; /* Rojo más oscuro al pasar el mouse */
+  background-color: var(--color-delete-button-hover);
 }

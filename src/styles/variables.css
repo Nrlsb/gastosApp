@@ -1,0 +1,53 @@
+/* src/styles/variables.css */
+
+:root {
+  /* Colors */
+  --color-background: #f0f2f5;
+  --color-primary: #007bff;
+  --color-primary-hover: #0056b3; /* A slightly darker shade for hover, derived from Bootstrap's default */
+  --color-danger: #dc3545;
+  --color-danger-hover: #bd2130; /* A slightly darker shade for hover, derived from Bootstrap's default */
+  --color-text-dark: #2c3e50;
+  --color-text-medium: #7f8c8d;
+  --color-white: #fff;
+  --color-info: #3498db; /* Used for button-crear */
+  --color-info-hover: #2980b9; /* Used for button-crear hover and tipo-tag.personal */
+  --color-secondary-dark: #34495e; /* Used for planilla-card h2 */
+  --color-tag-personal: #2980b9;
+  --color-tag-compartida: #8e44ad;
+  --color-delete-button: #e74c3c;
+  --color-delete-button-hover: #c0392b;
+
+  /* Font Sizes */
+  --font-size-sm: 0.8rem; /* For tipo-tag */
+  --font-size-base: 1rem; /* For button-crear */
+  --font-size-md: 0.9em; /* For badge.bg-secondary */
+  --font-size-lg: 1.2rem; /* For no-planillas p */
+  --font-size-xl: 1.4rem; /* For planilla-card h2 */
+
+  /* Spacing */
+  --spacing-xs: 0.3rem;
+  --spacing-sm: 0.5rem;
+  --spacing-md: 0.75em; /* For badge.bg-secondary */
+  --spacing-lg: 1rem;
+  --spacing-xl: 1.5rem;
+  --spacing-xxl: 2rem;
+  --spacing-xxxl: 3rem;
+
+  /* Border Radius */
+  --border-radius-sm: 5px;
+  --border-radius-md: 8px;
+  --border-radius-lg: 15px;
+
+  /* Box Shadows */
+  --shadow-sm: 0 4px 6px rgba(0,0,0,0.05); /* For no-planillas */
+  --shadow-md: 0 4px 8px rgba(0,0,0,0.1); /* For card default */
+  --shadow-lg: 0 4px 10px rgba(0,0,0,0.1); /* For planilla-card default */
+  --shadow-xl: 0 8px 15px rgba(0,0,0,0.15); /* For planilla-card hover */
+  --shadow-xxl: 0 8px 16px rgba(0,0,0,0.1); /* For card hover */
+
+  /* Transitions */
+  --transition-ease-in-out: all 0.2s ease-in-out;
+  --transition-color-ease: background-color 0.3s;
+  --transition-transform-shadow: transform 0.2s, box-shadow 0.2s;
+}

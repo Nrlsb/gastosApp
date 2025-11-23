@@ -2,6 +2,10 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { usePlanillas } from '../../context/PlanillasContext'; // Importar el hook del contexto
 import useAuth from '../../hooks/useAuth';
+import Button from '../../components/ui/Button';
+import Input from '../../components/forms/Input';
+import Card from '../../components/ui/Card';
+import Typography from '../../components/ui/Typography';
 
 
 export default function CrearPlanilla() {
@@ -40,26 +44,23 @@ export default function CrearPlanilla() {
 
   return (
     <div className="container d-flex justify-content-center align-items-center min-vh-100">
-      <div className="card p-4 shadow-lg" style={{ maxWidth: '500px', width: '100%' }}>
-        <h1 className="text-center mb-4">Crear Nueva Planilla</h1>
+      <Card style={{ maxWidth: '500px', width: '100%' }}>
+        <Typography variant="h1" className="text-center mb-4">Crear Nueva Planilla</Typography>
         <form onSubmit={handleSubmit}>
-          <div className="mb-3">
-            <label htmlFor="nombre" className="form-label">Nombre de la Planilla</label>
-            <input
-              type="text"
-              id="nombre"
-              className="form-control"
-              value={nombrePlanilla}
-              onChange={(e) => setNombrePlanilla(e.target.value)}
-              placeholder="Ej: Gastos de Enero"
-              required
-            />
-          </div>
-          <button type="submit" className="btn btn-primary btn-lg w-100">
+          <Input
+            id="nombre"
+            label="Nombre de la Planilla"
+            type="text"
+            value={nombrePlanilla}
+            onChange={(e) => setNombrePlanilla(e.target.value)}
+            placeholder="Ej: Gastos de Enero"
+            required
+          />
+          <Button type="submit" variant="primary" size="lg" className="w-100">
             Crear y Empezar a Añadir Gastos
-          </button>
+          </Button>
         </form>
-      </div>
+      </Card>
     </div>
   );
 }
