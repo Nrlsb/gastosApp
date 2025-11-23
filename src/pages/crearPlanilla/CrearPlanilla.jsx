@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { usePlanillas } from '../../context/PlanillasContext'; // Importar el hook del contexto
 import useAuth from '../../hooks/useAuth';
-import './CrearPlanilla.css';
+
 
 export default function CrearPlanilla() {
   const [nombrePlanilla, setNombrePlanilla] = useState('');

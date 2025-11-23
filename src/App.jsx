@@ -1,5 +1,5 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
-import './App.css';
+
 import HomePage from './pages/home/HomePage';
 import CrearPlanilla from './pages/crearPlanilla/CrearPlanilla';
 import VerPlanillas from './pages/verPlanillas/VerPlanillas';

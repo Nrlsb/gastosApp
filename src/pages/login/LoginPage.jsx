@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { auth } from '../../firebase';
 import { GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
 import { useNavigate } from 'react-router-dom';
-import './LoginPage.css';
+
 
 const LoginPage = () => {
   const [error, setError] = useState('');

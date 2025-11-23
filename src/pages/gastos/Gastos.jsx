@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { usePlanillas } from '../../context/PlanillasContext'; // Importar el hook del contexto
-import './Gastos.css';
+
 
 function Gastos() {
   const { planillaId } = useParams();

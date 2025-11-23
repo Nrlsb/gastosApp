@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { signOut } from 'firebase/auth';
 import { auth } from '../../firebase';
 import useAuth from '../../hooks/useAuth';
-import './HomePage.css';
+
 
 function HomePage() {
   const { currentUser } = useAuth();
