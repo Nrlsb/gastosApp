@@ -16,6 +16,7 @@ Este es un proyecto desarrollado en React y Vite para gestionar y hacer seguimie
 *   JavaScript
 *   CSS
 
+
 ## 🛠️ Cómo Empezar
 
 Sigue estos pasos para levantar el proyecto en tu máquina local.
