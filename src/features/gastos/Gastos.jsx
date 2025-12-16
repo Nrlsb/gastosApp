@@ -6,14 +6,14 @@ import { getDolarRate } from '../../services/dolarApi'; // Importar API del dól
 function Gastos() {
   const { planillaId } = useParams();
   // Usar el contexto para la gestión de gastos
-  const { 
-    planillas, 
-    expenses, 
-    getExpenses, 
-    addExpense, 
-    updateExpense, 
-    deleteExpense, 
-    loading: planillasLoading 
+  const {
+    planillas,
+    expenses,
+    getExpenses,
+    addExpense,
+    updateExpense,
+    deleteExpense,
+    loading: planillasLoading
   } = usePlanillas();
 
   // Estado para el formulario
@@ -24,23 +24,31 @@ function Gastos() {
   const [enCuotas, setEnCuotas] = useState(false);
   const [totalCuotas, setTotalCuotas] = useState('');
   const [cuotaActual, setCuotaActual] = useState('');
-  
+
   // Estado para la cotización del dólar
   const [dolarRate, setDolarRate] = useState(null);
-  
+
   // Estado para manejar la edición
   const [editingId, setEditingId] = useState(null);
 
-  // Efecto para obtener la cotización del dólar y los gastos iniciales
+  // Efecto para obtener la cotización del dólar
   useEffect(() => {
-    const fetchInitialData = async () => {
-      const rate = await getDolarRate();
-      setDolarRate(rate);
-      if (planillaId) {
-        await getExpenses(planillaId);
+    const fetchDolar = async () => {
+      try {
+        const rate = await getDolarRate();
+        setDolarRate(rate);
+      } catch (error) {
+        console.error("Error fetching dolar rate:", error);
       }
     };
-    fetchInitialData();
+    fetchDolar();
+  }, []);
+
+  // Efecto para obtener los gastos
+  useEffect(() => {
+    if (planillaId) {
+      getExpenses(planillaId);
+    }
   }, [planillaId, getExpenses]);
 
   // Buscar el nombre de la planilla actual
@@ -108,7 +116,7 @@ function Gastos() {
       setTotalCuotas(expenseToEdit.totalCuotas || '');
     }
   }, [expenses]);
-  
+
   // Manejador para cancelar la edición
   const handleCancelEdit = useCallback(() => {
     resetForm();
@@ -135,7 +143,7 @@ function Gastos() {
     }, 0);
   }, [expenses, dolarRate]);
 
-  if (planillasLoading || !dolarRate) {
+  if (planillasLoading) {
     return <div className="container mt-5">Cargando datos...</div>;
   }
 
@@ -148,6 +156,7 @@ function Gastos() {
         <div className="d-flex justify-content-between align-items-center">
           <h2 className="h4 mb-0">
             Gasto Personal Total: <span className="text-primary">ARS ${totalPersonalARS.toFixed(2)}</span>
+            {!dolarRate && <small className="text-muted ms-2">(Cotización USD cargando...)</small>}
           </h2>
         </div>
       </div>
@@ -190,10 +199,10 @@ function Gastos() {
             </div>
             <div className="col-md-2">
               <label htmlFor="currency" className="form-label">Moneda</label>
-              <select 
-                id="currency" 
-                className="form-select" 
-                value={currency} 
+              <select
+                id="currency"
+                className="form-select"
+                value={currency}
                 onChange={(e) => setCurrency(e.target.value)}
               >
                 <option value="ARS">ARS</option>
@@ -296,16 +305,34 @@ function Gastos() {
             </thead>
             <tbody>
               {expenses.map(expense => {
-                const montoTotalArs = expense.currency === 'USD' ? expense.amount * dolarRate : expense.amount;
+                const montoTotalArs = expense.currency === 'USD' && dolarRate ? expense.amount * dolarRate : expense.amount;
                 const montoPersonalArs = expense.esCompartido ? montoTotalArs / 2 : montoTotalArs;
-                const montoDolares = expense.currency === 'ARS' ? expense.amount / dolarRate : expense.amount;
+                const montoDolares = expense.currency === 'ARS' && dolarRate ? expense.amount / dolarRate : (expense.currency === 'USD' ? expense.amount : 0);
 
                 return (
                   <tr key={expense.id}>
                     <td>{expense.description}</td>
-                    <td>ARS ${montoTotalArs.toFixed(2)}</td>
-                    <td>ARS ${montoPersonalArs.toFixed(2)}</td>
-                    <td>USD ${montoDolares.toFixed(2)}</td>
+                    <td>
+                      {expense.currency === 'USD' && !dolarRate ? (
+                        <span className="text-muted">Cargando...</span>
+                      ) : (
+                        `ARS $${montoTotalArs.toFixed(2)}`
+                      )}
+                    </td>
+                    <td>
+                      {expense.currency === 'USD' && !dolarRate ? (
+                        <span className="text-muted">Cargando...</span>
+                      ) : (
+                        `ARS $${montoPersonalArs.toFixed(2)}`
+                      )}
+                    </td>
+                    <td>
+                      {!dolarRate && expense.currency === 'ARS' ? (
+                        <span className="text-muted">Cargando...</span>
+                      ) : (
+                        `USD $${montoDolares.toFixed(2)}`
+                      )}
+                    </td>
                     <td>{expense.enCuotas ? `${expense.cuotaActual} / ${expense.totalCuotas}` : '-'}</td>
                     <td>
                       <span className={`badge ${expense.esCompartido ? 'bg-info text-dark' : 'bg-light text-dark'}`}>
