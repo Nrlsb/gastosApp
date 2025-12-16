@@ -96,36 +96,30 @@ function GastosPersonales() {
     <div className="gastos-container">
       <h1 className="page-title">Gastos Personales</h1>
 
-      {/* KPI Section */}
+      {/* KPI Section - Hero */}
       <div className="kpi-section">
         <div className="kpi-card">
-          <div className="kpi-icon">
-            <DollarSign size={24} />
-          </div>
-          <div className="kpi-content">
-            <span className="kpi-label">Total Gastos (ARS)</span>
-            <span className="kpi-value">${(totals['ARS'] || 0).toFixed(2)}</span>
-          </div>
+          <span className="kpi-label">Gasto Personal Total</span>
+          <span className="kpi-value">
+            ${(totals['ARS'] || 0).toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+          </span>
         </div>
+
         {totals['USD'] > 0 && (
           <div className="kpi-card">
-            <div className="kpi-icon">
-              <DollarSign size={24} />
-            </div>
-            <div className="kpi-content">
-              <span className="kpi-label">Total Gastos (USD)</span>
-              <span className="kpi-value">USD {(totals['USD'] || 0).toFixed(2)}</span>
-            </div>
+            <span className="kpi-label">Total en Dólares</span>
+            <span className="kpi-value usd">
+              USD {(totals['USD'] || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+            </span>
           </div>
         )}
-        <div className="kpi-card" style={{ cursor: 'pointer' }} onClick={handleClearExpenses}>
-          <div className="kpi-icon" style={{ backgroundColor: '#fee2e2', color: '#ef4444' }}>
-            <Trash2 size={24} />
-          </div>
-          <div className="kpi-content">
-            <span className="kpi-label">Acciones</span>
-            <span className="kpi-value" style={{ fontSize: '1rem' }}>Limpiar Todo</span>
-          </div>
+
+        <div className="kpi-card" style={{ cursor: 'pointer', alignItems: 'flex-start' }} onClick={handleClearExpenses}>
+          <span className="kpi-label">Acciones Rápidas</span>
+          <button className="action-btn delete" style={{ padding: '0.5rem 1rem', fontSize: '0.9rem', width: 'auto', marginTop: 'auto' }}>
+            <Trash2 size={18} style={{ marginRight: '8px' }} />
+            Limpiar Todo
+          </button>
         </div>
       </div>
 
@@ -133,7 +127,7 @@ function GastosPersonales() {
       <div className="expense-form-card">
         <h2 className="form-title">Añadir Nuevo Gasto</h2>
         <form onSubmit={handleSubmit}>
-          <div className="row g-3 align-items-end" style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1.5rem', alignItems: 'end' }}>
             <div style={{ flex: 2, minWidth: '250px' }}>
               <label htmlFor="description_personal" className="form-label">Descripción</label>
               <input
@@ -142,11 +136,12 @@ function GastosPersonales() {
                 id="description_personal"
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-                placeholder="Ej: Compra en el supermercado"
+                placeholder="Ej: Supermercado"
                 required
               />
             </div>
-            <div style={{ flex: 1, minWidth: '150px' }}>
+
+            <div style={{ flex: 1 }}>
               <label htmlFor="amount_personal" className="form-label">Monto</label>
               <input
                 type="number"
@@ -159,7 +154,8 @@ function GastosPersonales() {
                 required
               />
             </div>
-            <div style={{ flex: 1, minWidth: '120px' }}>
+
+            <div style={{ flex: 1 }}>
               <label htmlFor="currency_personal" className="form-label">Moneda</label>
               <select
                 id="currency_personal"
@@ -219,14 +215,16 @@ function GastosPersonales() {
             </div>
           )}
 
-          <button type="submit" className="btn-submit">Añadir Gasto</button>
+          <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '2rem' }}>
+            <button type="submit" className="btn-submit">Añadir Gasto</button>
+          </div>
         </form>
       </div>
 
       {/* Table Section */}
-      <div className="expenses-table-container">
+      <div className="table-container">
         {expenses.length === 0 ? (
-          <div style={{ padding: '2rem', textAlign: 'center', color: 'var(--color-text-medium)' }}>
+          <div style={{ padding: '3rem', textAlign: 'center', color: '#9CA3AF' }}>
             No hay gastos registrados.
           </div>
         ) : (
@@ -234,7 +232,7 @@ function GastosPersonales() {
             <thead>
               <tr>
                 <th>Descripción</th>
-                <th className="text-right">Monto</th>
+                <th className="numeric">Monto</th>
                 <th>Cuotas</th>
                 <th>Fecha</th>
                 <th className="text-right">Acciones</th>
@@ -244,30 +242,34 @@ function GastosPersonales() {
               {expenses.map(expense => (
                 <tr key={expense.id}>
                   <td>
-                    <div style={{ fontWeight: '500' }}>{expense.description}</div>
-                    {expense.esCompartido && (
-                      <span className="tipo-tag compartida" style={{ fontSize: '0.7rem', display: 'inline-block', marginTop: '0.25rem' }}>
+                    <div style={{ fontWeight: '500', color: '#111827' }}>{expense.description}</div>
+                    {expense.esCompartido ? (
+                      <span className="badge badge-shared" style={{ marginTop: '0.5rem' }}>
                         Compartido
+                      </span>
+                    ) : (
+                      <span className="badge badge-personal" style={{ marginTop: '0.5rem' }}>
+                        Personal
                       </span>
                     )}
                   </td>
-                  <td className="text-right" style={{ fontFamily: 'monospace', fontWeight: '600' }}>
-                    {expense.currency || 'ARS'} ${expense.amount.toFixed(2)}
+                  <td className="numeric">
+                    {expense.currency || 'ARS'} {expense.amount.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                   </td>
                   <td>
                     {expense.enCuotas ? (
-                      <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.25rem', color: 'var(--color-text-medium)' }}>
+                      <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.25rem', color: '#6B7280', fontSize: '0.9rem' }}>
                         <CreditCard size={14} />
                         {expense.cuotaActual}/{expense.totalCuotas}
                       </span>
                     ) : '-'}
                   </td>
-                  <td style={{ color: 'var(--color-text-medium)' }}>
+                  <td style={{ color: '#6B7280', fontSize: '0.9rem' }}>
                     {new Date(expense.id).toLocaleDateString()}
                   </td>
                   <td className="text-right">
                     <button
-                      className="btn-icon"
+                      className="action-btn delete"
                       onClick={() => handleDeleteExpense(expense.id)}
                       title="Eliminar"
                     >
@@ -285,3 +287,4 @@ function GastosPersonales() {
 }
 
 export default GastosPersonales;
+
