@@ -1,4 +1,4 @@
-const API_URL = 'https://apidolarbna.onrender.com/api/bna';
+const API_URL = '/api/bna';
 
 /**
  * Obtiene la cotización del dólar del BNA.
