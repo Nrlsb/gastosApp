@@ -1,26 +1,23 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
-import { getDolarRate } from '../../services/dolarApi'; // Importar API del dólar
+import { getDolarRate } from '../../services/dolarApi';
+import { Trash2, DollarSign, CreditCard, Calendar, TrendingUp } from 'lucide-react';
+import './GastosPersonales.css';
 
 function GastosPersonales() {
-  // Estado para almacenar la lista de gastos, inicializado desde localStorage
   const [expenses, setExpenses] = useState(() => {
     const savedExpenses = localStorage.getItem('personal_expenses');
     return savedExpenses ? JSON.parse(savedExpenses) : [];
   });
 
-  // Estado para el formulario
   const [description, setDescription] = useState('');
   const [amount, setAmount] = useState('');
-  const [currency, setCurrency] = useState('ARS'); // Estado para la moneda
+  const [currency, setCurrency] = useState('ARS');
   const [esCompartido, setEsCompartido] = useState(false);
   const [enCuotas, setEnCuotas] = useState(false);
   const [totalCuotas, setTotalCuotas] = useState('');
   const [cuotaActual, setCuotaActual] = useState('');
-
-  // Estado para la cotización del dólar
   const [dolarRate, setDolarRate] = useState(null);
 
-  // Efecto para obtener la cotización del dólar al montar el componente
   useEffect(() => {
     const fetchDolarRate = async () => {
       const rate = await getDolarRate();
@@ -29,12 +26,10 @@ function GastosPersonales() {
     fetchDolarRate();
   }, []);
 
-  // Efecto para guardar los gastos en localStorage cada vez que cambian
   useEffect(() => {
     localStorage.setItem('personal_expenses', JSON.stringify(expenses));
   }, [expenses]);
 
-  // Manejador para enviar el formulario
   const handleSubmit = useCallback((e) => {
     e.preventDefault();
     if (!description || !amount || (enCuotas && (!cuotaActual || !totalCuotas))) return;
@@ -53,11 +48,10 @@ function GastosPersonales() {
     if (esCompartido) {
       const savedSharedExpenses = localStorage.getItem('shared_expenses');
       const sharedExpenses = savedSharedExpenses ? JSON.parse(savedSharedExpenses) : [];
-      
-      // Para gastos compartidos, guardamos el monto original y la moneda
+
       const sharedExpenseData = {
         ...newExpense,
-        amount: parseFloat(amount) // Guardar el monto completo para el compartido
+        amount: parseFloat(amount)
       };
 
       localStorage.setItem('shared_expenses', JSON.stringify([...sharedExpenses, sharedExpenseData]));
@@ -66,7 +60,6 @@ function GastosPersonales() {
       setExpenses(prevExpenses => [...prevExpenses, newExpense]);
     }
 
-    // Limpiar formulario
     setDescription('');
     setAmount('');
     setCurrency('ARS');
@@ -76,17 +69,18 @@ function GastosPersonales() {
     setTotalCuotas('');
   }, [description, amount, currency, enCuotas, cuotaActual, totalCuotas, esCompartido]);
 
-  // Manejador para limpiar todos los gastos
   const handleClearExpenses = useCallback(() => {
-    setExpenses([]);
+    if (window.confirm('¿Estás seguro de que quieres eliminar todos los gastos?')) {
+      setExpenses([]);
+    }
   }, []);
 
-  // Manejador para eliminar un gasto individual
   const handleDeleteExpense = useCallback((id) => {
-    setExpenses(expenses.filter(expense => expense.id !== id));
+    if (window.confirm('¿Eliminar este gasto?')) {
+      setExpenses(expenses.filter(expense => expense.id !== id));
+    }
   }, [expenses]);
 
-  // Calcular los totales por moneda
   const totals = useMemo(() => {
     return expenses.reduce((acc, expense) => {
       const expenseCurrency = expense.currency || 'ARS';
@@ -99,40 +93,52 @@ function GastosPersonales() {
   }, [expenses]);
 
   return (
-    <div className="container mt-5">
-      <h1 className="text-center mb-4">Gastos Personales</h1>
+    <div className="gastos-container">
+      <h1 className="page-title">Gastos Personales</h1>
 
-      {/* Resumen de Gastos */}
-      <div className="card p-3 mb-4 bg-light">
-        <div className="d-flex justify-content-between align-items-center">
-          <h2 className="h4 mb-0">
-            Total: {Object.keys(totals).length > 0 ? (
-              Object.entries(totals).map(([currency, total]) => (
-                <span key={currency} className="text-primary me-3">
-                  {currency}: ${total.toFixed(2)}
-                </span>
-              ))
-            ) : (
-              <span className="text-primary">$0.00</span>
-            )}
-          </h2>
-          <button className="btn btn-danger" onClick={handleClearExpenses}>
-            Limpiar Gastos
-          </button>
+      {/* KPI Section */}
+      <div className="kpi-section">
+        <div className="kpi-card">
+          <div className="kpi-icon">
+            <DollarSign size={24} />
+          </div>
+          <div className="kpi-content">
+            <span className="kpi-label">Total Gastos (ARS)</span>
+            <span className="kpi-value">${(totals['ARS'] || 0).toFixed(2)}</span>
+          </div>
+        </div>
+        {totals['USD'] > 0 && (
+          <div className="kpi-card">
+            <div className="kpi-icon">
+              <DollarSign size={24} />
+            </div>
+            <div className="kpi-content">
+              <span className="kpi-label">Total Gastos (USD)</span>
+              <span className="kpi-value">USD {(totals['USD'] || 0).toFixed(2)}</span>
+            </div>
+          </div>
+        )}
+        <div className="kpi-card" style={{ cursor: 'pointer' }} onClick={handleClearExpenses}>
+          <div className="kpi-icon" style={{ backgroundColor: '#fee2e2', color: '#ef4444' }}>
+            <Trash2 size={24} />
+          </div>
+          <div className="kpi-content">
+            <span className="kpi-label">Acciones</span>
+            <span className="kpi-value" style={{ fontSize: '1rem' }}>Limpiar Todo</span>
+          </div>
         </div>
       </div>
 
-      {/* Formulario para Añadir Gasto */}
-      <div className="card p-4 mb-4">
-        <h2 className="h5 mb-3">Añadir Nuevo Gasto</h2>
+      {/* Form Section */}
+      <div className="expense-form-card">
+        <h2 className="form-title">Añadir Nuevo Gasto</h2>
         <form onSubmit={handleSubmit}>
-          <div className="row g-3 align-items-end">
-            {/* Descripción, Monto y Moneda */}
-            <div className="col-md-4">
+          <div className="row g-3 align-items-end" style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+            <div style={{ flex: 2, minWidth: '250px' }}>
               <label htmlFor="description_personal" className="form-label">Descripción</label>
               <input
                 type="text"
-                className="form-control"
+                className="form-input"
                 id="description_personal"
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
@@ -140,130 +146,132 @@ function GastosPersonales() {
                 required
               />
             </div>
-            <div className="col-md-2">
+            <div style={{ flex: 1, minWidth: '150px' }}>
               <label htmlFor="amount_personal" className="form-label">Monto</label>
               <input
                 type="number"
                 step="0.01"
-                className="form-control"
+                className="form-input"
                 id="amount_personal"
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
-                placeholder="Ej: 50.25"
+                placeholder="0.00"
                 required
               />
-              {currency === 'USD' && amount > 0 && dolarRate && (
-                <small className="form-text text-muted">
-                  ~ ARS ${(amount * dolarRate).toFixed(2)}
-                </small>
-              )}
             </div>
-            <div className="col-md-2">
+            <div style={{ flex: 1, minWidth: '120px' }}>
               <label htmlFor="currency_personal" className="form-label">Moneda</label>
-              <select 
-                id="currency_personal" 
-                className="form-select" 
-                value={currency} 
+              <select
+                id="currency_personal"
+                className="form-select"
+                value={currency}
                 onChange={(e) => setCurrency(e.target.value)}
               >
                 <option value="ARS">ARS</option>
                 <option value="USD">USD</option>
               </select>
             </div>
-
-            {/* Checkboxes */}
-            <div className="col-md-4 d-flex align-items-center">
-              <div className="form-check me-3">
-                <input
-                  className="form-check-input"
-                  type="checkbox"
-                  id="esCompartido"
-                  checked={esCompartido}
-                  onChange={(e) => setEsCompartido(e.target.checked)}
-                />
-                <label className="form-check-label" htmlFor="esCompartido">
-                  Gasto Compartido
-                </label>
-              </div>
-              <div className="form-check">
-                <input
-                  className="form-check-input"
-                  type="checkbox"
-                  id="enCuotas"
-                  checked={enCuotas}
-                  onChange={(e) => setEnCuotas(e.target.checked)}
-                />
-                <label className="form-check-label" htmlFor="enCuotas">
-                  Pagar en cuotas
-                </label>
-              </div>
-            </div>
           </div>
 
-          {/* Campos de Cuotas (condicional) */}
+          <div style={{ marginTop: '1.5rem', display: 'flex', gap: '2rem', flexWrap: 'wrap' }}>
+            <label className="form-check">
+              <input
+                type="checkbox"
+                checked={esCompartido}
+                onChange={(e) => setEsCompartido(e.target.checked)}
+              />
+              <span>Gasto Compartido</span>
+            </label>
+            <label className="form-check">
+              <input
+                type="checkbox"
+                checked={enCuotas}
+                onChange={(e) => setEnCuotas(e.target.checked)}
+              />
+              <span>Pagar en cuotas</span>
+            </label>
+          </div>
+
           {enCuotas && (
-            <div className="row g-3 mt-2">
-              <div className="col-md-3">
-                <label htmlFor="cuotaActual" className="form-label">Cuota Actual</label>
+            <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem' }}>
+              <div style={{ flex: 1 }}>
+                <label className="form-label">Cuota Actual</label>
                 <input
                   type="number"
-                  className="form-control"
-                  id="cuotaActual"
+                  className="form-input"
                   value={cuotaActual}
                   onChange={(e) => setCuotaActual(e.target.value)}
-                  placeholder="Ej: 1"
+                  placeholder="1"
                   required
                 />
               </div>
-              <div className="col-md-3">
-                <label htmlFor="totalCuotas" className="form-label">Total de Cuotas</label>
+              <div style={{ flex: 1 }}>
+                <label className="form-label">Total de Cuotas</label>
                 <input
                   type="number"
-                  className="form-control"
-                  id="totalCuotas"
+                  className="form-input"
                   value={totalCuotas}
                   onChange={(e) => setTotalCuotas(e.target.value)}
-                  placeholder="Ej: 3"
+                  placeholder="12"
                   required
                 />
               </div>
             </div>
           )}
 
-          <div className="row mt-3">
-            <div className="col-12">
-              <button type="submit" className="btn btn-primary btn-lg w-100">Añadir</button>
-            </div>
-          </div>
+          <button type="submit" className="btn-submit">Añadir Gasto</button>
         </form>
       </div>
 
-      {/* Tabla de Gastos */}
-      <div>
-        <h2 className="h5 mb-3">Historial de Gastos</h2>
+      {/* Table Section */}
+      <div className="expenses-table-container">
         {expenses.length === 0 ? (
-          <div className="alert alert-info">No hay gastos registrados.</div>
+          <div style={{ padding: '2rem', textAlign: 'center', color: 'var(--color-text-medium)' }}>
+            No hay gastos registrados.
+          </div>
         ) : (
-          <table className="table table-striped align-middle">
-            <thead className="table-dark">
+          <table className="expenses-table">
+            <thead>
               <tr>
-                <th scope="col">Descripción</th>
-                <th scope="col">Monto</th>
-                <th scope="col">Cuotas</th>
-                <th scope="col">Fecha</th>
-                <th scope="col" className="text-end">Acciones</th>
+                <th>Descripción</th>
+                <th className="text-right">Monto</th>
+                <th>Cuotas</th>
+                <th>Fecha</th>
+                <th className="text-right">Acciones</th>
               </tr>
             </thead>
             <tbody>
               {expenses.map(expense => (
                 <tr key={expense.id}>
-                  <td>{expense.description}</td>
-                  <td>{expense.currency || 'ARS'} ${expense.amount.toFixed(2)}</td>
-                  <td>{expense.enCuotas ? `${expense.cuotaActual} / ${expense.totalCuotas}` : '-'}</td>
-                  <td>{new Date(expense.id).toLocaleDateString()}</td>
-                  <td className="text-end">
-                    <button className="btn btn-sm btn-outline-danger" onClick={() => handleDeleteExpense(expense.id)}>
-                      Eliminar
+                  <td>
+                    <div style={{ fontWeight: '500' }}>{expense.description}</div>
+                    {expense.esCompartido && (
+                      <span className="tipo-tag compartida" style={{ fontSize: '0.7rem', display: 'inline-block', marginTop: '0.25rem' }}>
+                        Compartido
+                      </span>
+                    )}
+                  </td>
+                  <td className="text-right" style={{ fontFamily: 'monospace', fontWeight: '600' }}>
+                    {expense.currency || 'ARS'} ${expense.amount.toFixed(2)}
+                  </td>
+                  <td>
+                    {expense.enCuotas ? (
+                      <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.25rem', color: 'var(--color-text-medium)' }}>
+                        <CreditCard size={14} />
+                        {expense.cuotaActual}/{expense.totalCuotas}
+                      </span>
+                    ) : '-'}
+                  </td>
+                  <td style={{ color: 'var(--color-text-medium)' }}>
+                    {new Date(expense.id).toLocaleDateString()}
+                  </td>
+                  <td className="text-right">
+                    <button
+                      className="btn-icon"
+                      onClick={() => handleDeleteExpense(expense.id)}
+                      title="Eliminar"
+                    >
+                      <Trash2 size={18} />
                     </button>
                   </td>
                 </tr>

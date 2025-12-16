@@ -1,112 +1,152 @@
 .ver-planillas-container {
   width: 100%;
-  max-width: 900px;
-  margin: 2rem auto;
-  padding: 2rem;
+  max-width: 1000px;
+  margin: var(--spacing-xxl) auto;
+  padding: var(--spacing-xl);
 }
 
 .ver-planillas-container h1 {
   text-align: center;
-  color: #2c3e50;
-  margin-bottom: 2rem;
+  color: var(--color-text-dark);
+  margin-bottom: var(--spacing-xxl);
+  font-weight: 700;
 }
 
 .no-planillas {
   text-align: center;
-  padding: 3rem;
-  background-color: #fff;
-  border-radius: 8px;
-  box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+  padding: var(--spacing-xxxl);
+  background-color: var(--color-white);
+  border-radius: var(--border-radius-lg);
+  box-shadow: var(--shadow-sm);
 }
 
 .no-planillas p {
-  font-size: 1.2rem;
-  color: #7f8c8d;
-  margin-bottom: 1.5rem;
+  font-size: var(--font-size-lg);
+  color: var(--color-text-medium);
+  margin-bottom: var(--spacing-xl);
 }
 
 .button-crear {
-  padding: 0.8rem 1.5rem;
-  font-size: 1rem;
-  font-weight: bold;
+  padding: var(--spacing-md) var(--spacing-xl);
+  font-size: var(--font-size-base);
+  font-weight: 600;
   text-decoration: none;
-  color: white;
-  background-color: #3498db;
-  border-radius: 5px;
-  transition: background-color 0.3s;
+  color: var(--color-white);
+  background-color: var(--color-primary);
+  border-radius: var(--border-radius-md);
+  transition: var(--transition-base);
+  display: inline-block;
 }
 
 .button-crear:hover {
-  background-color: #2980b9;
+  background-color: var(--color-primary-hover);
+  transform: translateY(-2px);
 }
 
 .lista-planillas {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-  gap: 1.5rem;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: var(--spacing-xl);
 }
 
 .planilla-card {
-  background-color: #fff;
-  border-radius: 8px;
-  padding: 1.5rem;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  background-color: var(--color-white);
+  border-radius: var(--border-radius-lg);
+  padding: var(--spacing-xl);
+  box-shadow: var(--shadow-md);
   text-decoration: none;
   color: inherit;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  transition: transform 0.2s, box-shadow 0.2s;
-  flex-grow: 1; /* Permite que la tarjeta crezca */
+  transition: var(--transition-transform-shadow);
+  cursor: pointer;
+  position: relative;
+  border: 1px solid var(--color-border);
+  min-height: 200px;
 }
 
 .planilla-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 8px 15px rgba(0,0,0,0.15);
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-xl);
+  border-color: var(--color-primary);
+}
+
+.card-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  flex-grow: 1;
+  margin-bottom: var(--spacing-lg);
+}
+
+.icon-wrapper {
+  background-color: var(--color-background);
+  padding: var(--spacing-md);
+  border-radius: 50%;
+  margin-bottom: var(--spacing-md);
+  color: var(--color-primary);
 }
 
 .planilla-card h2 {
-  font-size: 1.4rem;
-  color: #34495e;
-  margin: 0 0 1rem 0;
+  font-size: var(--font-size-lg);
+  color: var(--color-text-dark);
+  margin: 0 0 var(--spacing-sm) 0;
+  font-weight: 600;
 }
 
 .tipo-tag {
-  align-self: flex-start;
-  padding: 0.3rem 0.7rem;
-  border-radius: 15px;
-  font-size: 0.8rem;
-  font-weight: bold;
-  color: #fff;
-  text-transform: capitalize;
+  padding: var(--spacing-xs) var(--spacing-md);
+  border-radius: var(--border-radius-full);
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  color: var(--color-white);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
 .tipo-tag.personal {
-  background-color: #2980b9;
+  background-color: var(--color-tag-personal);
 }
 
 .tipo-tag.compartida {
-  background-color: #8e44ad;
+  background-color: var(--color-tag-compartida);
 }
 
-.planilla-card-container {
+.card-actions {
   display: flex;
-  flex-direction: column;
-  gap: 0.5rem; /* Espacio entre la tarjeta y el botón */
+  justify-content: flex-end;
+  gap: var(--spacing-sm);
+  border-top: 1px solid var(--color-border);
+  padding-top: var(--spacing-md);
+  margin-top: auto;
 }
 
-.button-eliminar {
-  padding: 0.6rem 1rem;
-  font-size: 0.9rem;
-  font-weight: bold;
-  color: white;
-  background-color: #e74c3c; /* Rojo para eliminar */
+.action-btn {
+  background: none;
   border: none;
-  border-radius: 5px;
   cursor: pointer;
-  transition: background-color 0.3s;
+  padding: var(--spacing-sm);
+  border-radius: var(--border-radius-md);
+  transition: var(--transition-base);
+  color: var(--color-text-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.button-eliminar:hover {
-  background-color: #c0392b; /* Rojo más oscuro al pasar el mouse */
+.action-btn:hover {
+  background-color: var(--color-background);
+  color: var(--color-text-dark);
+}
+
+.action-btn.btn-delete:hover {
+  background-color: #fee2e2;
+  color: var(--color-danger);
+}
+
+.action-btn.btn-clone:hover {
+  background-color: #e0f2fe;
+  color: var(--color-info);
 }
