@@ -1,53 +1,65 @@
 /* src/styles/variables.css */
 
 :root {
-  /* Colors */
-  --color-background: #f0f2f5;
-  --color-primary: #007bff;
-  --color-primary-hover: #0056b3; /* A slightly darker shade for hover, derived from Bootstrap's default */
-  --color-danger: #dc3545;
-  --color-danger-hover: #bd2130; /* A slightly darker shade for hover, derived from Bootstrap's default */
-  --color-text-dark: #2c3e50;
-  --color-text-medium: #7f8c8d;
-  --color-white: #fff;
-  --color-info: #3498db; /* Used for button-crear */
-  --color-info-hover: #2980b9; /* Used for button-crear hover and tipo-tag.personal */
-  --color-secondary-dark: #34495e; /* Used for planilla-card h2 */
-  --color-tag-personal: #2980b9;
-  --color-tag-compartida: #8e44ad;
-  --color-delete-button: #e74c3c;
-  --color-delete-button-hover: #c0392b;
+  /* Colors - Modern Slate/Blue Theme */
+  --color-background: #f8fafc; /* Slate 50 */
+  --color-primary: #3b82f6; /* Blue 500 */
+  --color-primary-hover: #2563eb; /* Blue 600 */
+  --color-secondary: #64748b; /* Slate 500 */
+  --color-secondary-dark: #1e293b; /* Slate 800 */
+  
+  --color-success: #10b981; /* Emerald 500 */
+  --color-warning: #f59e0b; /* Amber 500 */
+  --color-danger: #ef4444; /* Red 500 */
+  --color-danger-hover: #dc2626; /* Red 600 */
+  --color-info: #0ea5e9; /* Sky 500 */
+  --color-info-hover: #0284c7; /* Sky 600 */
+
+  --color-text-dark: #0f172a; /* Slate 900 */
+  --color-text-medium: #475569; /* Slate 600 */
+  --color-text-light: #94a3b8; /* Slate 400 */
+  --color-white: #ffffff;
+  
+  --color-border: #e2e8f0; /* Slate 200 */
+
+  /* Specific Component Colors */
+  --color-tag-personal: #0ea5e9; /* Sky 500 */
+  --color-tag-compartida: #8b5cf6; /* Violet 500 */
+  --color-delete-button: #ef4444;
+  --color-delete-button-hover: #dc2626;
 
   /* Font Sizes */
-  --font-size-sm: 0.8rem; /* For tipo-tag */
-  --font-size-base: 1rem; /* For button-crear */
-  --font-size-md: 0.9em; /* For badge.bg-secondary */
-  --font-size-lg: 1.2rem; /* For no-planillas p */
-  --font-size-xl: 1.4rem; /* For planilla-card h2 */
+  --font-size-xs: 0.75rem;
+  --font-size-sm: 0.875rem;
+  --font-size-base: 1rem;
+  --font-size-md: 1.125rem;
+  --font-size-lg: 1.25rem;
+  --font-size-xl: 1.5rem;
+  --font-size-xxl: 2rem;
 
   /* Spacing */
-  --spacing-xs: 0.3rem;
+  --spacing-xs: 0.25rem;
   --spacing-sm: 0.5rem;
-  --spacing-md: 0.75em; /* For badge.bg-secondary */
-  --spacing-lg: 1rem;
-  --spacing-xl: 1.5rem;
-  --spacing-xxl: 2rem;
-  --spacing-xxxl: 3rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 1.5rem;
+  --spacing-xl: 2rem;
+  --spacing-xxl: 3rem;
+  --spacing-xxxl: 4rem;
 
   /* Border Radius */
-  --border-radius-sm: 5px;
-  --border-radius-md: 8px;
-  --border-radius-lg: 15px;
+  --border-radius-sm: 0.375rem;
+  --border-radius-md: 0.5rem;
+  --border-radius-lg: 1rem;
+  --border-radius-full: 9999px;
 
   /* Box Shadows */
-  --shadow-sm: 0 4px 6px rgba(0,0,0,0.05); /* For no-planillas */
-  --shadow-md: 0 4px 8px rgba(0,0,0,0.1); /* For card default */
-  --shadow-lg: 0 4px 10px rgba(0,0,0,0.1); /* For planilla-card default */
-  --shadow-xl: 0 8px 15px rgba(0,0,0,0.15); /* For planilla-card hover */
-  --shadow-xxl: 0 8px 16px rgba(0,0,0,0.1); /* For card hover */
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+  --shadow-xxl: 0 25px 50px -12px rgb(0 0 0 / 0.25);
 
   /* Transitions */
-  --transition-ease-in-out: all 0.2s ease-in-out;
-  --transition-color-ease: background-color 0.3s;
-  --transition-transform-shadow: transform 0.2s, box-shadow 0.2s;
+  --transition-base: all 0.2s ease-in-out;
+  --transition-fast: all 0.1s ease-in-out;
 }
