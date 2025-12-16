@@ -1,0 +1,100 @@
+/* Contenedor Principal (La tarjeta blanca) */
+.card-container {
+    background: white;
+    padding: 3rem;
+    border-radius: 24px;
+    /* Bordes más suaves */
+    box-shadow: 0 20px 60px -10px rgba(0, 0, 0, 0.1);
+    /* Sombra difusa elegante */
+    text-align: center;
+    max-width: 450px;
+    width: 100%;
+}
+
+/* Título */
+.home-title {
+    font-family: 'Inter', sans-serif;
+    /* O Poppins */
+    color: #111827;
+    font-weight: 800;
+    margin-bottom: 0.5rem;
+}
+
+/* Subtítulo */
+.home-subtitle {
+    color: #6B7280;
+    margin-bottom: 2rem;
+}
+
+/* Botón Principal (Crear) */
+.btn-primary-custom {
+    background: linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%);
+    color: white;
+    border: none;
+    padding: 16px;
+    width: 100%;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: transform 0.2s;
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    text-decoration: none;
+    /* Remove underline from Link */
+}
+
+.btn-primary-custom:hover {
+    transform: translateY(-2px);
+    color: white;
+}
+
+/* Botón Secundario (Ver) - Ya no gris aburrido */
+.btn-secondary-custom {
+    background: white;
+    color: #374151;
+    border: 2px solid #E5E7EB;
+    padding: 14px;
+    width: 100%;
+    border-radius: 12px;
+    font-weight: 600;
+    margin-top: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    text-decoration: none;
+    /* Remove underline from Link */
+}
+
+.btn-secondary-custom:hover {
+    border-color: #2563EB;
+    color: #2563EB;
+    background: #F9FAFB;
+}
+
+/* Botón Cerrar Sesión (Sutil) */
+.btn-logout-custom {
+    background: transparent;
+    border: none;
+    color: #EF4444;
+    /* Rojo pero solo en texto */
+    font-size: 0.9rem;
+    margin-top: 24px;
+    cursor: pointer;
+    font-weight: 500;
+    text-decoration: underline;
+    opacity: 0.8;
+    width: auto;
+    display: inline-block;
+}
+
+.btn-logout-custom:hover {
+    opacity: 1;
+    color: #DC2626;
+}
